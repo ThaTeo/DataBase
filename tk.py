@@ -79,7 +79,7 @@ root=Tk()
 root.state("zoomed")
 root.geometry("300x300")
 root.resizable(1,1)
-width = (int(root.winfo_screenwidth())/24)+2
+width = (int(root.winfo_screenwidth())/24)+5
 height = root.winfo_screenheight()
 getFattura=Entry(root,width=23)
 getRicevuta=Entry(root,width=23)
