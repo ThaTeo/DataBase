@@ -77,22 +77,22 @@ def threadOrder():
     
 root=Tk()
 root.state("zoomed")
-root.geometry("300x300")
+root.geometry("{}x{}".format(root.winfo_screenwidth(),root.winfo_screenheight()))
 root.resizable(1,1)
-width = (int(root.winfo_screenwidth())/24)+5
+width = (root.winfo_screenwidth()-root.winfo_screenwidth()/100)/24
 height = root.winfo_screenheight()
 getFattura=Entry(root,width=23)
 getRicevuta=Entry(root,width=23)
-getGiorno=ttk.Combobox(root)
-getMese=ttk.Combobox(root)
-getAnno=ttk.Combobox(root)
+getGiorno=ttk.Combobox(root,width=4)
+getMese=ttk.Combobox(root,width=4)
+getAnno=ttk.Combobox(root,width=4)
 get=Button(root,text="Cerca",command=threadFilter)
 order=Button(root,text="Ordina",command=threadOrder)
 tree=ttk.Treeview(root,height=20)
 getNome=Entry(root,width=23)
 tree['columns']=("Nome","Numero","Indirizzo","Fattura","Ricevuta","Importo","Data","Note")
 tree.column("#0",width=0,stretch=NO,)
-tree.column('Nome',    width=int(width)*3)
+tree.column('Nome',    width=int(width)*4)
 tree.column('Numero',   width=int(width)*2)
 tree.column('Indirizzo',    width=int(width)*5)
 tree.column('Fattura',   width=int(width)*2)
@@ -113,15 +113,22 @@ tree.heading("Note",text="Note")
 
 
 
-getNome.grid(row=1,column=0)
-getFattura.grid(row=1,column=1)
-getRicevuta.grid(row=1,column=2)
-getGiorno.grid(row=1,column=3)
-getMese.grid(row=1,column=4)
-getAnno.grid(row=1,column=5)
+Label(root,text="Nome e Cognome").grid(row=1,column=0,padx=10)
+getNome.grid(row=2,column=0)
+Label(root,text="Fattura").grid(row=3,column=0,padx=10)
+
+getFattura.grid(row=4,column=0)
+Label(root,text="Ricevuta").grid(row=1,column=1,padx=10,columnspan=3)
+
+getRicevuta.grid(row=2,column=1,columnspan=3)
+Label(root,text="Data").grid(row=3,column=1,padx=10,columnspan=3)
+
+getGiorno.grid(row=4,column=1,padx=0)
+getMese.grid(row=4,column=2,padx=0)
+getAnno.grid(row=4,column=3,padx=0)
 get.grid(row=1,column=6)
 order.grid(row=1,column=7)
-tree.grid(row=0,column=0,padx=15,pady=15,columnspan=14)
+tree.grid(row=0,column=0,padx=root.winfo_screenwidth()/150,pady=15,columnspan=100)
 
 
 root.mainloop()
