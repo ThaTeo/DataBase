@@ -128,7 +128,7 @@ getMese.grid(row=4,column=2,padx=0)
 getAnno.grid(row=4,column=3,padx=0)
 get.grid(row=1,column=6)
 order.grid(row=1,column=7)
-tree.grid(row=0,column=0,padx=root.winfo_screenwidth()/150,pady=15,columnspan=100)
+tree.grid(row=0,column=0,padx=root.winfo_screenwidth()/200,pady=15,columnspan=100)
 
 
 root.mainloop()
