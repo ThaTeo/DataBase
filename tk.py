@@ -75,9 +75,13 @@ def orderView():
 def threadFilter():
     tree.delete(*tree.get_children())
     Thread(target=filterSearch).start()
+    print(root.winfo_height())
+    print(root.winfo_width())
 def threadOrder():
     tree.delete(*tree.get_children())
     Thread(target=orderView).start()
+    print(root.winfo_width())
+    print(root.winfo_height())
     
 root=Tk()
 root.state("zoomed")
@@ -85,8 +89,8 @@ root.geometry("{}x{}".format(root.winfo_screenwidth(),root.winfo_screenheight())
 root.resizable(1,1)
 width = (root.winfo_screenwidth()-root.winfo_screenwidth()/25)/24
 height = root.winfo_screenheight()
-searchFrame=LabelFrame(root,text="Ricerca",pady=30,font=("Segoe UI",20))
-editFrame=LabelFrame(root,text="Modifica",pady=30,font=("Segoe UI",20))
+searchFrame=LabelFrame(root,text="Ricerca",font=("Segoe UI",20))
+editFrame=LabelFrame(root,text="Modifica",font=("Segoe UI",20))
 getNome=Entry(searchFrame,width=30)
 getFattura=Entry(searchFrame,width=30)
 getRicevuta=Entry(searchFrame,width=30)
@@ -118,7 +122,7 @@ tree.heading("Importo",text="Importo")
 tree.heading("Data",text="Data")
 tree.heading("Note",text="Note")
 
-searchFrame.grid(row=1,column=0,padx=root.winfo_screenwidth()/50)
+searchFrame.grid(row=1,column=0,ipadx=root.winfo_screenwidth()/80,ipady=root.winfo_screenheight()/80,padx=root.winfo_screenwidth()/50)
 
 fontStyle = tkFont.Font(family="Segoe UI", size=11)
 
@@ -141,8 +145,8 @@ Label(searchFrame,text="Data",font=fontStyle).grid(row=5,column=1,padx=10,column
 getGiorno.grid(row=6,column=1,padx=0)
 getMese.grid(row=6,column=2,padx=0)
 getAnno.grid(row=6,column=3,padx=0)
-get.grid(row=3,column=6,padx=25)
-order.grid(row=5,column=6,padx=25)
+get.grid(row=3,column=6,padx=10)
+order.grid(row=5,column=6,padx=10)
 tree.grid(row=0,column=0,padx=root.winfo_screenwidth()/50,pady=15,columnspan=200)
 
 
