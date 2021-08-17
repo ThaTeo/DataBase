@@ -4,6 +4,7 @@ from time import sleep, struct_time
 from threading import Thread
 from datetime import date
 from dataclasses import dataclass
+import tkinter.font as tkFont
 
 iids=0
 
@@ -36,6 +37,7 @@ def filterSearch():
     fileRead(param,toCheck)
 
 def fileRead(param,toCheck):
+    
     iids=0
     file=open("DataBase.txt","r")
     for line in file:
@@ -71,27 +73,31 @@ def orderView():
                 fileRead(["","","{}".format(y),"{}".format(j),"{}".format(i),""],[0,0,1,1,1,0])
 
 def threadFilter():
+    tree.delete(*tree.get_children())
     Thread(target=filterSearch).start()
 def threadOrder():
+    tree.delete(*tree.get_children())
     Thread(target=orderView).start()
     
 root=Tk()
 root.state("zoomed")
 root.geometry("{}x{}".format(root.winfo_screenwidth(),root.winfo_screenheight()))
 root.resizable(1,1)
-width = (root.winfo_screenwidth()-root.winfo_screenwidth()/100)/24
+width = (root.winfo_screenwidth()-root.winfo_screenwidth()/25)/24
 height = root.winfo_screenheight()
-getFattura=Entry(root,width=23)
-getRicevuta=Entry(root,width=23)
-getGiorno=ttk.Combobox(root,width=4)
-getMese=ttk.Combobox(root,width=4)
-getAnno=ttk.Combobox(root,width=4)
-get=Button(root,text="Cerca",command=threadFilter)
-order=Button(root,text="Ordina",command=threadOrder)
-tree=ttk.Treeview(root,height=20)
-getNome=Entry(root,width=23)
+searchFrame=LabelFrame(root,text="Ricerca",pady=30,font=("Segoe UI",20))
+getNome=Entry(searchFrame,width=30)
+getFattura=Entry(searchFrame,width=30)
+getRicevuta=Entry(searchFrame,width=30)
+getGiorno=ttk.Combobox(searchFrame,width=4)
+getMese=ttk.Combobox(searchFrame,width=4)
+getAnno=ttk.Combobox(searchFrame,width=4)
+get=Button(searchFrame,text="Cerca",command=threadFilter)
+order=Button(searchFrame,text="Ordina",command=threadOrder)
+tree=ttk.Treeview(root,height=30)
+
 tree['columns']=("Nome","Numero","Indirizzo","Fattura","Ricevuta","Importo","Data","Note")
-tree.column("#0",width=0,stretch=NO,)
+tree.column("#0",width=0,stretch=NO)
 tree.column('Nome',    width=int(width)*4)
 tree.column('Numero',   width=int(width)*2)
 tree.column('Indirizzo',    width=int(width)*5)
@@ -101,7 +107,7 @@ tree.column('Importo',   width=int(width)*1)
 tree.column('Data',    width=int(width)*2)
 tree.column('Note',    width=int(width)*6)
 
-tree.heading("#0",text="Boh")
+tree.heading("#0",text="")
 tree.heading("Nome",text="Nome")
 tree.heading("Numero",text="Numero")
 tree.heading("Indirizzo",text="Indirizzo")
@@ -111,24 +117,33 @@ tree.heading("Importo",text="Importo")
 tree.heading("Data",text="Data")
 tree.heading("Note",text="Note")
 
+searchFrame.grid(row=1,column=0,padx=root.winfo_screenwidth()/50)
+
+fontStyle = tkFont.Font(family="Segoe UI", size=11)
 
 
-Label(root,text="Nome e Cognome").grid(row=1,column=0,padx=10)
-getNome.grid(row=2,column=0)
-Label(root,text="Fattura").grid(row=3,column=0,padx=10)
 
-getFattura.grid(row=4,column=0)
-Label(root,text="Ricevuta").grid(row=1,column=1,padx=10,columnspan=3)
+Label(searchFrame,text="Nome e Cognome",font=fontStyle).grid(row=2,column=0,padx=50,sticky="W")
+getNome.grid(row=3,column=0,padx=50)
 
-getRicevuta.grid(row=2,column=1,columnspan=3)
-Label(root,text="Data").grid(row=3,column=1,padx=10,columnspan=3)
+Label(searchFrame,text="").grid(row=4,column=0,pady=5)
 
-getGiorno.grid(row=4,column=1,padx=0)
-getMese.grid(row=4,column=2,padx=0)
-getAnno.grid(row=4,column=3,padx=0)
+Label(searchFrame,text="Numero di Fattura",font=fontStyle).grid(row=5,column=0,padx=50,sticky="W")
+getFattura.grid(row=6,column=0,padx=50)
+
+Label(searchFrame,text="Numero di Ricevuta",font=fontStyle).grid(row=2,column=1,padx=0,columnspan=3,sticky="W")
+getRicevuta.grid(row=3,column=1,columnspan=3)
+
+Label(searchFrame,text="").grid(row=4,column=0,pady=5)
+
+Label(searchFrame,text="Data",font=fontStyle).grid(row=5,column=1,padx=10,columnspan=3)
+getGiorno.grid(row=6,column=1,padx=0)
+getMese.grid(row=6,column=2,padx=0)
+getAnno.grid(row=6,column=3,padx=0)
 get.grid(row=1,column=6)
 order.grid(row=1,column=7)
-tree.grid(row=0,column=0,padx=root.winfo_screenwidth()/200,pady=15,columnspan=100)
+tree.grid(row=0,column=0,padx=root.winfo_screenwidth()/50,pady=15,columnspan=200)
+
 
 
 root.mainloop()
