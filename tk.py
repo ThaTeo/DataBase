@@ -123,7 +123,7 @@ fontStyle = tkFont.Font(family="Segoe UI", size=11)
 
 
 
-Label(searchFrame,text="Nome e Cognome",font=fontStyle).grid(row=2,column=0,padx=50,sticky="W")
+Label(searchFrame,text="Nome e Nome",font=fontStyle).grid(row=2,column=0,padx=50,sticky="W")
 getNome.grid(row=3,column=0,padx=50)
 
 Label(searchFrame,text="").grid(row=4,column=0,pady=5)
