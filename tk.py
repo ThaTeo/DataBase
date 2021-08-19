@@ -35,6 +35,23 @@ def filterSearch():
         toCheck[5]=1
 
     fileRead(param,toCheck)
+    
+def delete(event):
+    megastringonasgravatapazza:str=""
+    params=list(tree.item(tree.focus()).values())[2]
+    for element in params:
+        element=str(element)
+    file=open("Database.txt","r")
+    for line in file:
+        strings=line.rstrip().split("|")
+        if strings!=params:
+            megastringonasgravatapazza=megastringonasgravatapazza+line
+    file.close()
+    file=open("Database.txt","w")    
+    file.write(megastringonasgravatapazza)
+    file.close()
+    tree.delete(tree.selection()[0])
+    
 
 def fileRead(param,toCheck):
     
@@ -100,6 +117,7 @@ getAnno=ttk.Combobox(searchFrame,width=4)
 get=Button(searchFrame,text="Cerca elemento",command=threadFilter,width=15,height=2,bg="#78a9ff")
 order=Button(searchFrame,text="Ordina Database\n per data",command=threadOrder,width=15,height=2,bg="#a6ffd5")
 tree=ttk.Treeview(root,height=int((root.winfo_screenheight()/100)*3))
+tree.bind("<<TreeviewSelect>>",delete)
 
 tree['columns']=("Nome","Numero","Indirizzo","Fattura","Ricevuta","Importo","Data","Note")
 tree.column("#0",width=0,stretch=NO)
