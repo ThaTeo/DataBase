@@ -43,7 +43,7 @@ def insNew():
         
 
         print("xx"+note.get("1.0",END)+"xx")
-        file.write(nome.get()+s+numero.get()+s+indirizzo.get()+s+fattura.get()+s+ricevuta.get()+s+importo.get()+s+giorno.get()+"-"+mese.get()+"-"+anno.get()+s+Note)
+        file.write(nome.get().rstrip()+s+numero.get().rstrip()+s+indirizzo.get().rstrip()+s+fattura.get().rstrip()+s+ricevuta.get().rstrip()+s+importo.get().rstrip()+s+giorno.get().rstrip()+"-"+mese.get().rstrip()+"-"+anno.get().rstrip()+s+Note)
         file.close()
         Thread(target=showIns).start()
         nome.delete(0,END)
@@ -114,4 +114,6 @@ ins.place(x=540,y=280)
 
 
 toplevel.mainloop()
+
+
 
