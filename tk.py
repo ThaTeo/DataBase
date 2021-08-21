@@ -234,7 +234,7 @@ def deleteFun():
     file2=open("database.ini","w")    
     file2.write(megastringonasgravatapazza)
     file2.close()
-    
+
     
 
 def fileRead(param,toCheck):
@@ -315,6 +315,7 @@ getAnno=ttk.Combobox(searchFrame,width=4,values=years)
 get=Button(searchFrame,text="Cerca elemento",command=threadFilter,width=15,height=2,bg="#78a9ff")
 order=Button(searchFrame,text="Ordina Database\n per data",command=threadOrder,width=15,height=2,bg="#a6ffd5")
 tree=ttk.Treeview(root,height=int((root.winfo_screenheight()/100)*3))
+tree.bind("<<Tree")
 new=Button(root,text="nuovo",command=start)
 
 delete=Button(root,text="cancela",command=deleteFun)
