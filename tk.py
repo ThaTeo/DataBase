@@ -235,7 +235,29 @@ def deleteFun():
     file2.write(megastringonasgravatapazza)
     file2.close()
 
-    
+def showIns(event):
+    paramsRaw=list(tree.item(tree.focus()).values())[2]
+    params=[]
+    for element in paramsRaw:
+        params.append(str(element))
+
+
+
+
+def onoffFun():
+    if showNome["state"]==NORMAL:
+        active["text"]="🔒"
+        for child in editFrame.winfo_children():
+            print(child.winfo_class())
+            if child.winfo_class()=="Entry":
+                child["state"]=DISABLED
+    else:
+        active["text"]="🔓"
+        for child in editFrame.winfo_children():
+            print(child.winfo_class())
+            if child.winfo_class()=="Entry":
+                child["state"]=NORMAL
+
 
 def fileRead(param,toCheck):
     
@@ -285,38 +307,75 @@ def threadOrder():
     print(root.winfo_width())
     print(root.winfo_height())
     
-root=Tk()
-root.state("zoomed")
-root.geometry("{}x{}".format(root.winfo_screenwidth(),root.winfo_screenheight()))
-root.resizable(1,1)
+
 
 def start():
     try:
         for widget in root.winfo_children():
             if isinstance(widget, Toplevel):
                 widget.destroy()
-        
     except:
         pass
     startIns()
 
 
-
+root=Tk()
+root.state("zoomed")
+root.geometry("{}x{}".format(root.winfo_screenwidth(),root.winfo_screenheight()))
+root.resizable(1,1)
+fontStyle = tkFont.Font(family="Segoe UI", size=9)
 width = (root.winfo_screenwidth()-root.winfo_screenwidth()/25)/24
 height = root.winfo_screenheight()
-searchFrame=LabelFrame(root,text="Ricerca",font=("Segoe UI",20))
-editFrame=LabelFrame(root,text="Modifica",font=("Segoe UI",20))
-getNome=Entry(searchFrame,width=30)
-getFattura=Entry(searchFrame,width=30)
-getRicevuta=Entry(searchFrame,width=30)
-getGiorno=ttk.Combobox(searchFrame,width=4,values=days)
-getMese=ttk.Combobox(searchFrame,width=4,values=months)
-getAnno=ttk.Combobox(searchFrame,width=4,values=years)
-get=Button(searchFrame,text="Cerca elemento",command=threadFilter,width=15,height=2,bg="#78a9ff")
-order=Button(searchFrame,text="Ordina Database\n per data",command=threadOrder,width=15,height=2,bg="#a6ffd5")
+searchFrame=LabelFrame(root,text="Ricerca",font=("Segoe UI",16))
+editFrame=LabelFrame(root,text="Modifica",font=("Segoe UI",16))
+print(int(root.winfo_screenwidth()/75))
+getNome=Entry(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
+getFattura=Entry(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
+getRicevuta=Entry(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
+if int(root.winfo_screenwidth()/480)<4:
+    getGiorno=ttk.Combobox(searchFrame,font=fontStyle,width=4,values=days)
+    getMese=ttk.Combobox(searchFrame,font=fontStyle,width=4,values=months)
+    getAnno=ttk.Combobox(searchFrame,font=fontStyle,width=4,values=years)
+else:
+    getGiorno=ttk.Combobox(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/480),values=days)
+    getMese=ttk.Combobox(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/480),values=months)
+    getAnno=ttk.Combobox(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/480),values=years)
+print(root.winfo_screenheight())
+if root.winfo_screenheight()>800:
+    delete=Button(root,text="cancela",command=deleteFun,)
+    new=Button(root,text="nuovo",command=start)
+    get=Button(searchFrame,text="Cerca elemento",command=threadFilter,width=int(root.winfo_screenwidth()/120),height=2,bg="#78a9ff")
+    order=Button(searchFrame,text="Ordina Database\n per data",command=threadOrder,width=int(root.winfo_screenwidth()/120),height=2,bg="#a6ffd5")
+else:
+    delete=Button(root,text="cancela",command=deleteFun)
+    new=Button(root,text="nuovo",command=start)
+    get=Button(searchFrame,text="Cerca",command=threadFilter,width=int(root.winfo_screenwidth()/200),height=1,bg="#78a9ff")
+    order=Button(searchFrame,text="Ordina",command=threadOrder,width=int(root.winfo_screenwidth()/200),height=1,bg="#a6ffd5")
+
 tree=ttk.Treeview(root,height=int((root.winfo_screenheight()/100)*3))
-tree.bind("<<Tree")
-new=Button(root,text="nuovo",command=start)
+tree.bind("<Button-1>",showIns)
+
+
+showNome=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
+showIndirizzo=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
+showNumero=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
+showFattura=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
+showRicevuta=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
+showImporto=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
+if int(root.winfo_screenwidth()/480)<4:
+    showGiorno=Entry(editFrame,font=fontStyle,width=4)
+    showMese=Entry(editFrame,font=fontStyle,width=4)
+    showAnno=Entry(editFrame,font=fontStyle,width=4)
+else:
+    showGiorno=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/480))
+    showMese=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/480))
+    showAnno=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/480))
+showNote=Entry(editFrame)
+
+
+active=Checkbutton(editFrame,command=onoffFun,text="🔒",font=("segoeUI",14))
+
+
 
 delete=Button(root,text="cancela",command=deleteFun)
 
@@ -341,34 +400,93 @@ tree.heading("Importo",text="Importo")
 tree.heading("Data",text="Data")
 tree.heading("Note",text="Note")
 
-searchFrame.grid(row=1,column=0,ipadx=root.winfo_screenwidth()/80,ipady=root.winfo_screenheight()/80,padx=root.winfo_screenwidth()/50)
-
-fontStyle = tkFont.Font(family="Segoe UI", size=11)
 
 
 
-Label(searchFrame,text="Nome e Cognome",font=fontStyle).grid(row=2,column=0,padx=50,sticky="W")
-getNome.grid(row=3,column=0,padx=50)
+if root.winfo_screenheight()>800:
+    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/50),padx=int(root.winfo_screenwidth()/100))
+    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/50))
+else:
+    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/100),padx=int(root.winfo_screenwidth()/100))
+    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/100))
+#------------------------------------------------------------------------------------
+print(int(root.winfo_screenheight()/100))
+if root.winfo_screenheight()>800:
+   Label(searchFrame,text="").grid(row=1,column=0,pady=int(root.winfo_screenheight()/200))
+else:
+    pass
 
-Label(searchFrame,text="").grid(row=4,column=0,pady=5)
 
-Label(searchFrame,text="Numero di Fattura",font=fontStyle).grid(row=5,column=0,padx=50,sticky="W")
-getFattura.grid(row=6,column=0,padx=50)
+Label(searchFrame,text="Nome e Cognome",font=fontStyle).grid(row=2,column=0,padx=int(root.winfo_screenwidth()/40),sticky="W")
+getNome.grid(row=3,column=0,padx=int(root.winfo_screenwidth()/40))
 
-Label(searchFrame,text="Numero di Ricevuta",font=fontStyle).grid(row=2,column=1,padx=0,columnspan=3,sticky="W")
-getRicevuta.grid(row=3,column=1,columnspan=3)
+Label(searchFrame,text="").grid(row=4,column=0,pady=int(root.winfo_screenheight()/100))
 
-Label(searchFrame,text="").grid(row=4,column=0,pady=5)
+Label(searchFrame,text="Numero Fattura",font=fontStyle).grid(row=5,column=0,padx=int(root.winfo_screenwidth()/40),sticky="W")
+getFattura.grid(row=6,column=0,padx=int(root.winfo_screenwidth()/40))
+#-------------------------------------------------------------------------------------
 
-Label(searchFrame,text="Data",font=fontStyle).grid(row=5,column=1,padx=10,columnspan=3)
+Label(searchFrame,text="").grid(row=4,column=0,pady=int(root.winfo_screenheight()/100))
+
+Label(searchFrame,text="Numero Ricevuta",font=fontStyle).grid(row=2,column=1,padx=0,columnspan=3,sticky="W")
+getRicevuta.grid(row=3,column=1,columnspan=3,sticky="W")
+
+Label(searchFrame,text="").grid(row=4,column=0,pady=int(root.winfo_screenheight()/100))
+
+Label(searchFrame,text="Data",font=fontStyle).grid(row=5,column=1,padx=0,columnspan=3)
 getGiorno.grid(row=6,column=1,padx=0)
 getMese.grid(row=6,column=2,padx=0)
 getAnno.grid(row=6,column=3,padx=0)
-get.grid(row=3,column=6,padx=10)
-order.grid(row=5,column=6,padx=10)
+#--------------------------------------------------------------------------------------
+Label(searchFrame,text="").grid(row=3,column=5,padx=int(root.winfo_screenwidth()/200))
+get.grid(row=3,column=6,padx=0)
+Label(searchFrame,text="").grid(row=5,column=5,padx=int(root.winfo_screenwidth()/200))
+order.grid(row=5,column=6,padx=0)
+#--------------------------------------------------------------------------------------
 tree.grid(row=0,column=0,padx=root.winfo_screenwidth()/50,pady=15,columnspan=200)
 delete.grid(row=10,column=10)
 new.grid(row=10,column=11)
+
+
+
+
+print(int(root.winfo_screenheight()/100))
+if root.winfo_screenheight()>800:
+   Label(editFrame,text="").grid(row=1,column=0,pady=int(root.winfo_screenheight()/200))
+else:
+    pass
+
+
+Label(editFrame,text="Nome e Cognome",font=fontStyle).grid(row=2,column=0,padx=int(root.winfo_screenwidth()/100),sticky="W")
+showNome.grid(row=3,column=0,padx=int(root.winfo_screenwidth()/100))
+
+Label(editFrame,text="").grid(row=4,column=0,pady=int(root.winfo_screenheight()/100))
+
+Label(editFrame,text="Numero Telefono",font=fontStyle).grid(row=5,column=0,padx=int(root.winfo_screenwidth()/100),sticky="W")
+showNumero.grid(row=6,column=0,padx=int(root.winfo_screenwidth()/100))
+
+#-------------------------------------------------------------------------------------------------
+
+
+
+Label(editFrame,text="Indirizzo",font=fontStyle).grid(row=2,column=1,padx=int(root.winfo_screenwidth()/100),sticky="W")
+showIndirizzo.grid(row=3,column=1,padx=int(root.winfo_screenwidth()/100))
+
+Label(editFrame,text="N° Fattura",font=fontStyle).grid(row=5,column=1,padx=int(root.winfo_screenwidth()/100),sticky="W")
+showFattura.grid(row=6,column=1,padx=int(root.winfo_screenwidth()/100))
+
+#-------------------------------------------------------------------------------------------------
+
+
+
+Label(editFrame,text="N° Ricevuta",font=fontStyle).grid(row=2,column=2,padx=int(root.winfo_screenwidth()/100),sticky="W")
+showRicevuta.grid(row=3,column=2,padx=int(root.winfo_screenwidth()/100))
+
+Label(editFrame,text="Importo",font=fontStyle).grid(row=5,column=2,padx=int(root.winfo_screenwidth()/100),sticky="W")
+showImporto.grid(row=6,column=2,padx=int(root.winfo_screenwidth()/100))
+
+active.grid(row=3,column=7)
+
 
 
 
