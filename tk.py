@@ -5,6 +5,7 @@ from threading import Thread
 from datetime import date
 from dataclasses import dataclass
 import tkinter.font as tkFont
+from PIL import Image,ImageTk
 
 iids=0
 
@@ -124,24 +125,24 @@ def startIns():
 
 
 
-    nome=Entry(toplevel,width=23)
+    nome=Entry(toplevel,width=27)
     nome.insert(END,nomeGet)
-    fattura=Entry(toplevel,width=23,text=fatturaGet)
+    fattura=Entry(toplevel,width=27,text=fatturaGet)
     fattura.insert(END,fatturaGet)
-    ricevuta=Entry(toplevel,width=23,text=ricevutaGet)
+    ricevuta=Entry(toplevel,width=27,text=ricevutaGet)
     ricevuta.insert(END,ricevutaGet)
     importo=Entry(toplevel,width=7,text=importoGet)
     importo.insert(END,importoGet)
-    numero=Entry(toplevel,width=23,text=numeroGet)
+    numero=Entry(toplevel,width=27,text=numeroGet)
     numero.insert(END,numeroGet)
-    indirizzo=Entry(toplevel,width=23,text=indirizzoGet)
+    indirizzo=Entry(toplevel,width=27,text=indirizzoGet)
     indirizzo.insert(END,indirizzoGet)
     giorno=ttk.Combobox(toplevel,values=days,width=5)
     mese=ttk.Combobox(toplevel,values=months,width=5)
     anno=ttk.Combobox(toplevel,values=years,width=5)
     ins=Button(toplevel,text="Inserisci",command=insNew,width=5)
     errore=Label(toplevel,text="⚠Compila tutti i campi prima di continuare⚠",fg="white")
-    note=Text(toplevel,height=3,width=27,borderwidth=1,relief=SUNKEN)
+    note=Text(toplevel,height=3,width=27,borderwidth=1,font=fontStyle)
     note.insert(END,noteGet)
     
     giorno.set(giornoGet)
@@ -244,19 +245,23 @@ def showIns(event):
 
 
 
-def onoffFun():
+def onoffFun(event):
     if showNome["state"]==NORMAL:
-        active["text"]="🔒"
+        active["image"]=openLock
         for child in editFrame.winfo_children():
             print(child.winfo_class())
-            if child.winfo_class()=="Entry":
+            if child.winfo_class()=="Entry" or child.winfo_class()=="Text" or child.winfo_class()=="Button":
                 child["state"]=DISABLED
+                if child.winfo_class()=="Text":
+                    child["background"]="#F0F0F0"
     else:
-        active["text"]="🔓"
+        active["image"]=closedLock
         for child in editFrame.winfo_children():
             print(child.winfo_class())
-            if child.winfo_class()=="Entry":
+            if child.winfo_class()=="Entry" or child.winfo_class()=="Text" or child.winfo_class()=="Button":
                 child["state"]=NORMAL
+                if child.winfo_class()=="Text":
+                    child["background"]="White"
 
 
 def fileRead(param,toCheck):
@@ -361,21 +366,35 @@ showIndirizzo=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/
 showNumero=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
 showFattura=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
 showRicevuta=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
-showImporto=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
+showImporto=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75/3))
 if int(root.winfo_screenwidth()/480)<4:
     showGiorno=Entry(editFrame,font=fontStyle,width=4)
     showMese=Entry(editFrame,font=fontStyle,width=4)
     showAnno=Entry(editFrame,font=fontStyle,width=4)
 else:
-    showGiorno=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/480))
-    showMese=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/480))
-    showAnno=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/480))
-showNote=Entry(editFrame)
+    showGiorno=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/360))
+    showMese=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/360))
+    showAnno=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/360))
+showNote=Text(editFrame,width=int(root.winfo_screenwidth()/75),font=fontStyle,height=2)
 
 
-active=Checkbutton(editFrame,command=onoffFun,text="🔒",font=("segoeUI",14))
+
+img = Image.open("lucchettino.png")
+img = img.resize((30,30), Image.ANTIALIAS)
+
+img2 = Image.open("lucchettino_chiuso.png")
+img2 = img2.resize((30,30), Image.ANTIALIAS)
 
 
+openLock=ImageTk.PhotoImage(img)
+closedLock=ImageTk.PhotoImage(img2)
+
+active=Label(editFrame,image=openLock,font=("segoeUI",14))
+active.bind("<Button-1>",onoffFun)
+
+for child in editFrame.winfo_children():
+    if child.winfo_class()=="Entry" or child.winfo_class()=="Text" or child.winfo_class()=="Button":
+                child["state"]=DISABLED
 
 delete=Button(root,text="cancela",command=deleteFun)
 
@@ -477,15 +496,28 @@ showFattura.grid(row=6,column=1,padx=int(root.winfo_screenwidth()/100))
 
 #-------------------------------------------------------------------------------------------------
 
+Label(editFrame,text="Importo",font=fontStyle).grid(row=2,column=3,padx=int(root.winfo_screenwidth()/100),sticky="W",columnspan=15)
+Label(editFrame,text="€",font=fontStyle).grid(row=3,column=3,sticky="E")
+showImporto.grid(row=3,column=4,sticky="W")
+
+Label(editFrame,text="N° Ricevuta",font=fontStyle).grid(row=5,column=3,padx=int(root.winfo_screenwidth()/100),sticky="W",columnspan=15)
+showRicevuta.grid(row=6,column=3,padx=int(root.winfo_screenwidth()/100),columnspan=15)
+
+#--------------------------------------------------------------------------------------------
 
 
-Label(editFrame,text="N° Ricevuta",font=fontStyle).grid(row=2,column=2,padx=int(root.winfo_screenwidth()/100),sticky="W")
-showRicevuta.grid(row=3,column=2,padx=int(root.winfo_screenwidth()/100))
+Label(editFrame,text="Data",font=fontStyle).grid(row=2,column=20,padx=int(root.winfo_screenwidth()/100),columnspan=3)
+showGiorno.grid(row=3,column=20,padx=int(root.winfo_screenwidth()/100/3),sticky="E")
+showMese.grid(row=3,column=21,padx=int(root.winfo_screenwidth()/100/3))
+showAnno.grid(row=3,column=22,padx=int(root.winfo_screenwidth()/100/3),sticky="W")
 
-Label(editFrame,text="Importo",font=fontStyle).grid(row=5,column=2,padx=int(root.winfo_screenwidth()/100),sticky="W")
-showImporto.grid(row=6,column=2,padx=int(root.winfo_screenwidth()/100))
 
-active.grid(row=3,column=7)
+Label(editFrame,text="Note",font=fontStyle).grid(row=5,column=20,padx=int(root.winfo_screenwidth()/100),columnspan=3,sticky="W")
+showNote.grid(row=6,column=20,padx=int(root.winfo_screenwidth()/100),columnspan=3)
+
+active.grid(row=5,column=40,sticky="S")
+
+
 
 
 
