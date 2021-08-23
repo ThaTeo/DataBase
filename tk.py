@@ -70,7 +70,7 @@ def startIns():
                 Note=note.get("1.0",END)
             
 
-            print("xx"+note.get("1.0",END)+"xx")
+
             file.write(nome.get().rstrip()+s+numero.get().rstrip()+s+indirizzo.get().rstrip()+s+fattura.get().rstrip()+s+ricevuta.get().rstrip()+s+importo.get().rstrip()+s+giorno.get().rstrip()+"-"+mese.get().rstrip()+"-"+anno.get().rstrip()+s+Note)
             file.close()
             Thread(target=showIns).start()
@@ -108,7 +108,7 @@ def startIns():
         annoGet=anno.get()
         global noteGet
         noteGet=note.get("1.0",END)
-        print(nomeGet,indirizzoGet,numeroGet,fatturaGet,ricevutaGet,giornoGet,meseGet,annoGet,noteGet)
+
 
     
     toplevel=Toplevel(root)
@@ -213,12 +213,29 @@ def filterSearch():
     fileRead(param,toCheck)
     
 def deleteFun():
+    onoff=None
     megastringonasgravatapazza=""
     paramsRaw=list(tree.item(tree.focus()).values())[2]
     cosacciaschifosa=tree.item(tree.focus())
-    for child in tree.get_children():
-        if tree.item(child)==cosacciaschifosa:
-            tree.delete(child)
+    for row in tree.get_children():
+        if tree.item(row)==cosacciaschifosa:
+            tree.delete(row)
+            if showNome["state"]==DISABLED:
+                onoff=False
+            for child in editFrame.winfo_children():
+                if child.winfo_class()=="Entry":
+                    child["state"]=NORMAL
+                    child.delete(0,END)
+                elif child.winfo_class()=="Text":
+                    child["state"]=NORMAL
+                    child.delete("1.0",END)
+            if onoff==False:
+                for child in editFrame.winfo_children():
+                    if (child.winfo_class()=="Entry" or child.winfo_class()=="Text"):
+                            child["state"]=DISABLED
+                            if child.winfo_class()=="Text":
+                                child["background"]="#F0F0F0"
+                                child["foreground"]="#6D6D6D"
     params=[]
     for element in paramsRaw:
         params.append(str(element))
@@ -236,12 +253,45 @@ def deleteFun():
     file2.write(megastringonasgravatapazza)
     file2.close()
 
+
+
 def showIns(event):
+    onoff=None
+    if showNome["state"]==DISABLED:
+        onoff=False
+    for child in editFrame.winfo_children():
+        if child.winfo_class()=="Entry":
+            child["state"]=NORMAL
+            child.delete(0,END)
+
+        elif child.winfo_class()=="Text":
+            child["state"]=NORMAL
+            child.delete("1.0",END)
+
     paramsRaw=list(tree.item(tree.focus()).values())[2]
     params=[]
     for element in paramsRaw:
         params.append(str(element))
 
+    if params!=[]:
+        showNome.insert(END,params[0])
+        showNumero.insert(END,params[1])
+        showIndirizzo.insert(END,params[2])
+        showFattura.insert(END,params[3])
+        showRicevuta.insert(END,params[4])
+        showImporto.insert(END,params[5])
+        showGiorno.insert(END,params[6].split("-")[0])
+        showMese.insert(END,params[6].split("-")[1])  
+        showAnno.insert(END,params[6].split("-")[2])  
+        showNote.insert(END,params[7])
+
+    if onoff==False:
+        for child in editFrame.winfo_children():
+            if (child.winfo_class()=="Entry" or child.winfo_class()=="Text"):
+                    child["state"]=DISABLED
+                    if child.winfo_class()=="Text":
+                        child["background"]="#F0F0F0"
+                        child["foreground"]="#6D6D6D"
 
 
 
@@ -249,23 +299,23 @@ def onoffFun(event):
     if showNome["state"]==NORMAL:
         active["image"]=openLock
         for child in editFrame.winfo_children():
-            print(child.winfo_class())
             if child.winfo_class()=="Entry" or child.winfo_class()=="Text" or child.winfo_class()=="Button":
                 child["state"]=DISABLED
                 if child.winfo_class()=="Text":
                     child["background"]="#F0F0F0"
+                    child["foreground"]="#6D6D6D"
     else:
         active["image"]=closedLock
         for child in editFrame.winfo_children():
-            print(child.winfo_class())
             if child.winfo_class()=="Entry" or child.winfo_class()=="Text" or child.winfo_class()=="Button":
                 child["state"]=NORMAL
                 if child.winfo_class()=="Text":
                     child["background"]="White"
+                    child["foreground"]="Black"
 
 
 def fileRead(param,toCheck):
-    
+   
     iids=0
     file=open("database.ini","r")
     for line in file:
@@ -302,15 +352,47 @@ def orderView():
                 fileRead(["","","{}".format(y),"{}".format(j),"{}".format(i),""],[0,0,1,1,1,0])
 
 def threadFilter():
+    onoff=None
+    if showNome["state"]==DISABLED:
+        onoff=False
+    for child in editFrame.winfo_children():
+                if child.winfo_class()=="Entry":
+                    child["state"]=NORMAL
+                    child.delete(0,END)
+                elif child.winfo_class()=="Text":
+                    child["state"]=NORMAL
+                    child.delete("1.0",END)
+    if onoff==False:
+        for child in editFrame.winfo_children():
+            if (child.winfo_class()=="Entry" or child.winfo_class()=="Text"):
+                    child["state"]=DISABLED
+                    if child.winfo_class()=="Text":
+                        child["background"]="#F0F0F0"
+                        child["foreground"]="#6D6D6D"
+    
     tree.delete(*tree.get_children())
     Thread(target=filterSearch).start()
-    print(root.winfo_height())
-    print(root.winfo_width())
+
 def threadOrder():
+    onoff=None
+    if showNome["state"]==DISABLED:
+        onoff=False
+    for child in editFrame.winfo_children():
+                if child.winfo_class()=="Entry":
+                    child["state"]=NORMAL
+                    child.delete(0,END)
+                elif child.winfo_class()=="Text":
+                    child["state"]=NORMAL
+                    child.delete("1.0",END)
+    if onoff==False:
+        for child in editFrame.winfo_children():
+            if (child.winfo_class()=="Entry" or child.winfo_class()=="Text"):
+                    child["state"]=DISABLED
+                    if child.winfo_class()=="Text":
+                        child["background"]="#F0F0F0"
+                        child["foreground"]="#6D6D6D"
     tree.delete(*tree.get_children())
     Thread(target=orderView).start()
-    print(root.winfo_width())
-    print(root.winfo_height())
     
 
 
@@ -333,7 +415,7 @@ width = (root.winfo_screenwidth()-root.winfo_screenwidth()/25)/24
 height = root.winfo_screenheight()
 searchFrame=LabelFrame(root,text="Ricerca",font=("Segoe UI",16))
 editFrame=LabelFrame(root,text="Modifica",font=("Segoe UI",16))
-print(int(root.winfo_screenwidth()/75))
+
 getNome=Entry(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
 getFattura=Entry(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
 getRicevuta=Entry(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
@@ -345,20 +427,24 @@ else:
     getGiorno=ttk.Combobox(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/480),values=days)
     getMese=ttk.Combobox(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/480),values=months)
     getAnno=ttk.Combobox(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/480),values=years)
-print(root.winfo_screenheight())
+
 if root.winfo_screenheight()>800:
-    delete=Button(root,text="cancela",command=deleteFun,)
+    
     new=Button(root,text="nuovo",command=start)
-    get=Button(searchFrame,text="Cerca elemento",command=threadFilter,width=int(root.winfo_screenwidth()/120),height=2,bg="#78a9ff")
+    get=Button(searchFrame,text="Cerca\nelemento",command=threadFilter,width=int(root.winfo_screenwidth()/120),height=2,bg="#78a9ff")
     order=Button(searchFrame,text="Ordina Database\n per data",command=threadOrder,width=int(root.winfo_screenwidth()/120),height=2,bg="#a6ffd5")
+    delete=Button(editFrame,text="Elimina\nelemento",command=deleteFun,width=int(root.winfo_screenwidth()/120),height=2,bg="#ff6b6b")
+    edit=Button(editFrame,text="Modifica\nelemento",command=deleteFun,width=int(root.winfo_screenwidth()/120),height=2,bg="#fff382")
 else:
-    delete=Button(root,text="cancela",command=deleteFun)
+
     new=Button(root,text="nuovo",command=start)
     get=Button(searchFrame,text="Cerca",command=threadFilter,width=int(root.winfo_screenwidth()/200),height=1,bg="#78a9ff")
     order=Button(searchFrame,text="Ordina",command=threadOrder,width=int(root.winfo_screenwidth()/200),height=1,bg="#a6ffd5")
+    delete=Button(editFrame,text="Elimina",command=deleteFun,width=int(root.winfo_screenwidth()/200),height=1,bg="#ff6b6b")
+    edit=Button(editFrame,text="Elimina",command=deleteFun,width=int(root.winfo_screenwidth()/200),height=1,bg="#fff382")
 
 tree=ttk.Treeview(root,height=int((root.winfo_screenheight()/100)*3))
-tree.bind("<Button-1>",showIns)
+tree.bind("<ButtonRelease-1>",showIns)
 
 
 showNome=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
@@ -375,7 +461,13 @@ else:
     showGiorno=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/360))
     showMese=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/360))
     showAnno=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/360))
-showNote=Text(editFrame,width=int(root.winfo_screenwidth()/75),font=fontStyle,height=2)
+
+if root.winfo_screenheight()>800:
+    showNote=Text(editFrame,width=int(root.winfo_screenwidth()/75),font=fontStyle,height=2)
+    showNote["background"]="#F0F0F0"
+    showNote["foreground"]="#6D6D6D"
+else:
+    showNote=Entry(editFrame,width=int(root.winfo_screenwidth()/75),font=fontStyle)
 
 
 
@@ -396,7 +488,6 @@ for child in editFrame.winfo_children():
     if child.winfo_class()=="Entry" or child.winfo_class()=="Text" or child.winfo_class()=="Button":
                 child["state"]=DISABLED
 
-delete=Button(root,text="cancela",command=deleteFun)
 
 tree['columns']=("Nome","Numero","Indirizzo","Fattura","Ricevuta","Importo","Data","Note")
 tree.column("#0",width=0,stretch=NO)
@@ -423,13 +514,13 @@ tree.heading("Note",text="Note")
 
 
 if root.winfo_screenheight()>800:
-    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/50),padx=int(root.winfo_screenwidth()/100))
-    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/50))
+    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/50),padx=int(root.winfo_screenwidth()/50))
+    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/120),ipady=int(root.winfo_screenheight()/80))
 else:
-    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/100),padx=int(root.winfo_screenwidth()/100))
-    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/100))
+    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/100),padx=int(root.winfo_screenwidth()/50))
+    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/120),ipady=int(root.winfo_screenheight()/100))
 #------------------------------------------------------------------------------------
-print(int(root.winfo_screenheight()/100))
+
 if root.winfo_screenheight()>800:
    Label(searchFrame,text="").grid(row=1,column=0,pady=int(root.winfo_screenheight()/200))
 else:
@@ -462,37 +553,37 @@ get.grid(row=3,column=6,padx=0)
 Label(searchFrame,text="").grid(row=5,column=5,padx=int(root.winfo_screenwidth()/200))
 order.grid(row=5,column=6,padx=0)
 #--------------------------------------------------------------------------------------
-tree.grid(row=0,column=0,padx=root.winfo_screenwidth()/50,pady=15,columnspan=200)
-delete.grid(row=10,column=10)
+tree.grid(row=0,column=0,padx=int(root.winfo_screenwidth()/50),pady=15,columnspan=200)
 new.grid(row=10,column=11)
 
 
 
 
-print(int(root.winfo_screenheight()/100))
+
 if root.winfo_screenheight()>800:
    Label(editFrame,text="").grid(row=1,column=0,pady=int(root.winfo_screenheight()/200))
 else:
     pass
 
+Label(editFrame,text="").grid(row=4,column=0,padx=int(root.winfo_screenwidth()/120),pady=int(root.winfo_screenheight()/100))
 
-Label(editFrame,text="Nome e Cognome",font=fontStyle).grid(row=2,column=0,padx=int(root.winfo_screenwidth()/100),sticky="W")
-showNome.grid(row=3,column=0,padx=int(root.winfo_screenwidth()/100))
+Label(editFrame,text="Nome e Cognome",font=fontStyle).grid(row=2,column=1,padx=int(root.winfo_screenwidth()/100),sticky="W")
+showNome.grid(row=3,column=1,padx=int(root.winfo_screenwidth()/100))
 
-Label(editFrame,text="").grid(row=4,column=0,pady=int(root.winfo_screenheight()/100))
 
-Label(editFrame,text="Numero Telefono",font=fontStyle).grid(row=5,column=0,padx=int(root.winfo_screenwidth()/100),sticky="W")
-showNumero.grid(row=6,column=0,padx=int(root.winfo_screenwidth()/100))
+
+Label(editFrame,text="Numero Telefono",font=fontStyle).grid(row=5,column=1,padx=int(root.winfo_screenwidth()/100),sticky="W")
+showNumero.grid(row=6,column=1,padx=int(root.winfo_screenwidth()/100))
 
 #-------------------------------------------------------------------------------------------------
 
 
 
-Label(editFrame,text="Indirizzo",font=fontStyle).grid(row=2,column=1,padx=int(root.winfo_screenwidth()/100),sticky="W")
-showIndirizzo.grid(row=3,column=1,padx=int(root.winfo_screenwidth()/100))
+Label(editFrame,text="Indirizzo",font=fontStyle).grid(row=2,column=2,padx=int(root.winfo_screenwidth()/100),sticky="W")
+showIndirizzo.grid(row=3,column=2,padx=int(root.winfo_screenwidth()/100))
 
-Label(editFrame,text="N° Fattura",font=fontStyle).grid(row=5,column=1,padx=int(root.winfo_screenwidth()/100),sticky="W")
-showFattura.grid(row=6,column=1,padx=int(root.winfo_screenwidth()/100))
+Label(editFrame,text="N° Fattura",font=fontStyle).grid(row=5,column=2,padx=int(root.winfo_screenwidth()/100),sticky="W")
+showFattura.grid(row=6,column=2,padx=int(root.winfo_screenwidth()/100))
 
 #-------------------------------------------------------------------------------------------------
 
@@ -515,7 +606,12 @@ showAnno.grid(row=3,column=22,padx=int(root.winfo_screenwidth()/100/3),sticky="W
 Label(editFrame,text="Note",font=fontStyle).grid(row=5,column=20,padx=int(root.winfo_screenwidth()/100),columnspan=3,sticky="W")
 showNote.grid(row=6,column=20,padx=int(root.winfo_screenwidth()/100),columnspan=3)
 
-active.grid(row=5,column=40,sticky="S")
+
+delete.grid(row=3,column=40)
+edit.grid(row=5,column=40)
+
+active.grid(row=3,column=50,rowspan=3,padx=int(root.winfo_screenwidth()/100))
+
 
 
 
