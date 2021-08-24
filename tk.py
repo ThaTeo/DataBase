@@ -444,6 +444,7 @@ def orderView():
                     child["state"]=NORMAL
 
 def threadFilter():
+    flag.config(text="!!!Aspetta!!!")
     onoff=None
     if showNome["state"]==DISABLED:
         onoff=False
@@ -464,8 +465,10 @@ def threadFilter():
     
     tree.delete(*tree.get_children())
     Thread(target=filterSearch).start()
+    flag.config(text="")
 
 def threadOrder():
+    flag.config(text="!!!Aspetta!!!")
     onoff=None
     if showNome["state"]==DISABLED:
         onoff=False
@@ -485,7 +488,7 @@ def threadOrder():
                         child["foreground"]="#6D6D6D"
     tree.delete(*tree.get_children())
     Thread(target=orderView).start()
-    
+    flag.config(text="")
 
 
 def start():
@@ -540,9 +543,13 @@ else:
     delete=Button(editFrame,text="Elimina",command=deleteFun,width=int(root.winfo_screenwidth()/200),height=1,bg="#ff6b6b")
     edit=Button(editFrame,text="Modifica",command=editFun,width=int(root.winfo_screenwidth()/200),height=1,bg="#fff382")
 
-tree=ttk.Treeview(root,height=int((root.winfo_screenheight()/100)*3))
-tree.bind("<<TreeviewSelect>>",showIns)
 
+treeFrame=Frame(root)
+treeScroll=Scrollbar(treeFrame)
+tree=ttk.Treeview(treeFrame,height=int((root.winfo_screenheight()/100)*3),yscrollcommand=treeScroll.set)
+tree.bind("<<TreeviewSelect>>",showIns)
+flag=Label(text="",fg="red",font=("Segoe UI",12,"bold"))
+treeScroll.config(command=tree.yview)
 
 showNome=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
 showIndirizzo=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
@@ -611,11 +618,11 @@ tree.heading("Note",text="Note")
 
 
 if root.winfo_screenheight()>800:
-    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/50),padx=int(root.winfo_screenwidth()/50))
-    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/120),ipady=int(root.winfo_screenheight()/80))
+    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/50),padx=int(root.winfo_screenwidth()/50),rowspan=2)
+    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/120),ipady=int(root.winfo_screenheight()/80),rowspan=2)
 else:
-    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/100),padx=int(root.winfo_screenwidth()/50))
-    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/120),ipady=int(root.winfo_screenheight()/100))
+    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/100),padx=int(root.winfo_screenwidth()/50),rowspan=2)
+    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/120),ipady=int(root.winfo_screenheight()/100),rowspan=2)
 #------------------------------------------------------------------------------------
 
 if root.winfo_screenheight()>800:
@@ -650,8 +657,12 @@ get.grid(row=3,column=6,padx=0)
 Label(searchFrame,text="").grid(row=5,column=5,padx=int(root.winfo_screenwidth()/200))
 order.grid(row=5,column=6,padx=0)
 #--------------------------------------------------------------------------------------
-tree.grid(row=0,column=0,padx=int(root.winfo_screenwidth()/50),pady=15,columnspan=200)
-new.grid(row=1,column=3,padx=int(root.winfo_screenwidth()/3/2/8))
+treeFrame.grid(row=0,column=0,padx=int(root.winfo_screenwidth()/50),pady=15,columnspan=200)
+tree.pack(side=LEFT)
+treeScroll.pack(side=RIGHT,fill=Y)
+
+flag.grid(row=1,column=3,padx=int(root.winfo_screenwidth()/3/2/8))
+new.grid(row=2,column=3,padx=int(root.winfo_screenwidth()/3/2/8))
 
 
 
