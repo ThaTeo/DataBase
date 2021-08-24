@@ -32,9 +32,9 @@ numeroGet=""
 fatturaGet=""
 ricevutaGet=""
 importoGet=""
-giornoGet=str(today.day)
-meseGet=str(today.month)
-annoGet=str(today.year)
+giornoGet=""
+meseGet=""
+annoGet=""
 noteGet=""
 
 
@@ -47,6 +47,21 @@ noteGet=""
 
 def startIns():
 
+    def setToday():
+        giorno.set(today.day)
+        mese.set(today.month)
+        anno.set(today.year)
+    def clear():
+            nome.delete(0,END)
+            fattura.delete(0,END)
+            importo.delete(0,END)
+            giorno.set("")
+            mese.set("")
+            anno.set("")    
+            numero.delete(0,END)    
+            indirizzo.delete(0,END)
+            ricevuta.delete(0,END)
+            note.delete("1.0",END)
         
     def showErrore():
         errore.place(x=18, y=280)
@@ -57,7 +72,7 @@ def startIns():
 
     def showIns():
         errore.place(x=18, y=280)
-        errore.config(fg="green",text="✓ Nuova nattura inserita ✓")
+        errore.config(fg="green",text="✓ Nuova fattura inserita ✓")
         sleep(4)
         errore.place_forget()
 
@@ -77,9 +92,9 @@ def startIns():
             nome.delete(0,END)
             fattura.delete(0,END)
             importo.delete(0,END)
-            giorno.set(today.day)
-            mese.set(today.month)
-            anno.set(today.year)    
+            giorno.set("")
+            mese.set("")
+            anno.set("")    
             numero.delete(0,END)    
             indirizzo.delete(0,END)
             ricevuta.delete(0,END)
@@ -109,6 +124,28 @@ def startIns():
         global noteGet
         noteGet=note.get("1.0",END)
 
+    def onClosing():
+        global nomeGet
+        nomeGet=nome.get()
+        global indirizzoGet
+        indirizzoGet=indirizzo.get()
+        global numeroGet
+        numeroGet=numero.get()
+        global fatturaGet
+        fatturaGet=fattura.get()
+        global ricevutaGet
+        ricevutaGet=ricevuta.get()
+        global importoGet
+        importoGet=importo.get()
+        global giornoGet
+        giornoGet=giorno.get()
+        global meseGet
+        meseGet=mese.get()
+        global annoGet
+        annoGet=anno.get()
+        global noteGet
+        noteGet=note.get("1.0",END)
+        toplevel.destroy()
 
     
     toplevel=Toplevel(root)
@@ -120,6 +157,7 @@ def startIns():
     photo=PhotoImage(file='C:/Users/betta/Desktop/provina/Database/download.png')
     toplevel.iconphoto(False,photo)
     toplevel.bind('<FocusOut>',getEntries)
+    toplevel.protocol("WM_DELETE_WINDOW", onClosing)
         
     #Instancing-----------------------------------------------
 
@@ -140,7 +178,9 @@ def startIns():
     giorno=ttk.Combobox(toplevel,values=days,width=5)
     mese=ttk.Combobox(toplevel,values=months,width=5)
     anno=ttk.Combobox(toplevel,values=years,width=5)
-    ins=Button(toplevel,text="Inserisci",command=insNew,width=5)
+    ins=Button(toplevel,text="Aggiungi",command=insNew,width=10,height=1,bg="#85ff9d")
+    todayButt=Button(toplevel,text="Oggi",command=setToday,width=10,bg="#78a9ff")
+    clearButt=Button(toplevel,text="Pulisci",command=clear,width=10,height=1,bg="#fff382")
     errore=Label(toplevel,text="⚠Compila tutti i campi prima di continuare⚠",fg="white")
     note=Text(toplevel,height=3,width=27,borderwidth=1,font=fontStyle)
     note.insert(END,noteGet)
@@ -174,7 +214,9 @@ def startIns():
     mese.place(x=373, y=182)
     Label(toplevel, text='Anno').place(x=438, y=160)
     anno.place(x=438, y=182)
-    ins.place(x=540,y=280)
+    todayButt.place(x=520, y=182)
+    ins.place(x=520,y=282)
+    clearButt.place(x=420,y=282)
 
     toplevel.mainloop()
 
@@ -188,7 +230,9 @@ def startIns():
 
 
 def filterSearch():
-    
+    for child in searchFrame.winfo_children():
+                if child.winfo_class()=="Button":
+                    child["state"]=DISABLED
     param=["","","","","",""]
     toCheck=[0,0,0,0,0,0]
     if getFattura.get()!="":
@@ -211,6 +255,9 @@ def filterSearch():
         toCheck[5]=1
 
     fileRead(param,toCheck)
+    for child in searchFrame.winfo_children():
+                if child.winfo_class()=="Button":
+                    child["state"]=NORMAL
     
 def deleteFun():
     onoff=None
@@ -260,7 +307,10 @@ def deleteFun():
 
 def editFun():
     megastringonasgravatapazza=""
-    editString=showNome.get().rstrip()+s+showNumero.get().rstrip()+s+showIndirizzo.get().rstrip()+s+showFattura.get().rstrip()+s+showRicevuta.get().rstrip()+s+showImporto.get().rstrip()+s+showGiorno.get().rstrip()+"-"+showMese.get().rstrip()+"-"+showAnno.get().rstrip()+s+showNote.get("1.0",END).rstrip()+"\n"
+    if root.winfo_screenheight()>800:
+        editString=showNome.get().rstrip()+s+showNumero.get().rstrip()+s+showIndirizzo.get().rstrip()+s+showFattura.get().rstrip()+s+showRicevuta.get().rstrip()+s+showImporto.get().rstrip()+s+showGiorno.get().rstrip()+"-"+showMese.get().rstrip()+"-"+showAnno.get().rstrip()+s+showNote.get("1.0",END).rstrip()+"\n"
+    else:
+        editString=showNome.get().rstrip()+s+showNumero.get().rstrip()+s+showIndirizzo.get().rstrip()+s+showFattura.get().rstrip()+s+showRicevuta.get().rstrip()+s+showImporto.get().rstrip()+s+showGiorno.get().rstrip()+"-"+showMese.get().rstrip()+"-"+showAnno.get().rstrip()+s+showNote.get().rstrip()+"\n"
     paramsRaw=list(tree.item(tree.focus()).values())[2]
     cosacciaschifosa=tree.item(tree.focus())
     
@@ -380,10 +430,18 @@ def fileRead(param,toCheck):
 
 
 def orderView():
+    for child in searchFrame.winfo_children():
+                if child.winfo_class()=="Button":
+                    child["state"]=DISABLED
+
     for i in range(2000,today.year+1):
         for j in range(1,13):
             for y in range(1,32):
                 fileRead(["","","{}".format(y),"{}".format(j),"{}".format(i),""],[0,0,1,1,1,0])
+
+    for child in searchFrame.winfo_children():
+                if child.winfo_class()=="Button":
+                    child["state"]=NORMAL
 
 def threadFilter():
     onoff=None
@@ -443,6 +501,9 @@ def start():
 root=Tk()
 root.state("zoomed")
 root.geometry("{}x{}".format(root.winfo_screenwidth(),root.winfo_screenheight()))
+root.title("DataBase")
+iconcina=PhotoImage(file='database.png')
+root.iconphoto(False,iconcina)
 root.resizable(1,1)
 fontStyle = tkFont.Font(family="Segoe UI", size=9)
 width = (root.winfo_screenwidth()-root.winfo_screenwidth()/25)/24
@@ -462,23 +523,20 @@ else:
     getMese=ttk.Combobox(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/480),values=months)
     getAnno=ttk.Combobox(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/480),values=years)
 
-immagine = Image.open("piu.png")
-immagine = immagine.resize((50,50), Image.ANTIALIAS)
-foto=ImageTk.PhotoImage(immagine)
+
 
 
 if root.winfo_screenheight()>800:
-    new=Button(root,text="Nuovo",image=foto,command=start,bg="#73ff81")
+    new=Button(root,text="Aggiungi\nelemento",command=start,width=int(root.winfo_screenwidth()/120),height=2,bg="#85ff9d")
     get=Button(searchFrame,text="Cerca\nelemento",command=threadFilter,width=int(root.winfo_screenwidth()/120),height=2,bg="#78a9ff")
-    order=Button(searchFrame,text="Ordina Database\n per data",command=threadOrder,width=int(root.winfo_screenwidth()/120),height=2,bg="#a6ffd5")
+    order=Button(searchFrame,text="Ordina Database\n per data",command=threadOrder,width=int(root.winfo_screenwidth()/120),height=2,bg="#bdfbff")
     delete=Button(editFrame,text="Elimina\nelemento",command=deleteFun,width=int(root.winfo_screenwidth()/120),height=2,bg="#ff6b6b")
     edit=Button(editFrame,text="Modifica\nelemento",command=editFun,width=int(root.winfo_screenwidth()/120),height=2,bg="#fff382")
 else:
 
-    new=Button(root,text="Nuovo",image=foto,command=start,bg="#73ff81")
-    get=Button(searchFrame,text="Cerca\nelemento",command=threadFilter,width=int(root.winfo_screenwidth()/120),height=2,bg="#78a9ff")
+    new=Button(root,text="Aggiungi",command=start,width=int(root.winfo_screenwidth()/120),height=2,bg="#85ff9d")
     get=Button(searchFrame,text="Cerca",command=threadFilter,width=int(root.winfo_screenwidth()/200),height=1,bg="#78a9ff")
-    order=Button(searchFrame,text="Ordina",command=threadOrder,width=int(root.winfo_screenwidth()/200),height=1,bg="#a6ffd5")
+    order=Button(searchFrame,text="Ordina",command=threadOrder,width=int(root.winfo_screenwidth()/200),height=1,bg="#bdfbff")
     delete=Button(editFrame,text="Elimina",command=deleteFun,width=int(root.winfo_screenwidth()/200),height=1,bg="#ff6b6b")
     edit=Button(editFrame,text="Modifica",command=editFun,width=int(root.winfo_screenwidth()/200),height=1,bg="#fff382")
 
@@ -593,7 +651,7 @@ Label(searchFrame,text="").grid(row=5,column=5,padx=int(root.winfo_screenwidth()
 order.grid(row=5,column=6,padx=0)
 #--------------------------------------------------------------------------------------
 tree.grid(row=0,column=0,padx=int(root.winfo_screenwidth()/50),pady=15,columnspan=200)
-new.grid(row=1,column=3,padx=int(root.winfo_screenwidth()/30))
+new.grid(row=1,column=3,padx=int(root.winfo_screenwidth()/3/2/8))
 
 
 
