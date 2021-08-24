@@ -154,7 +154,7 @@ def startIns():
     toplevel.geometry("620x320+{}+{}".format(int(root.winfo_width()/2-xlen/2),int(root.winfo_height()/2-ylen/2)))
     toplevel.resizable(0,0)
     toplevel.title("Nuova Fattura")
-    photo=PhotoImage(file='C:/Users/betta/Desktop/provina/Database/download.png')
+    photo=PhotoImage(file='download.png')
     toplevel.iconphoto(False,photo)
     toplevel.bind('<FocusOut>',getEntries)
     toplevel.protocol("WM_DELETE_WINDOW", onClosing)
