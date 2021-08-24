@@ -216,26 +216,31 @@ def deleteFun():
     onoff=None
     megastringonasgravatapazza=""
     paramsRaw=list(tree.item(tree.focus()).values())[2]
+    print(paramsRaw)
     cosacciaschifosa=tree.item(tree.focus())
+    print(cosacciaschifosa)
+
     for row in tree.get_children():
         if tree.item(row)==cosacciaschifosa:
             tree.delete(row)
-            if showNome["state"]==DISABLED:
-                onoff=False
-            for child in editFrame.winfo_children():
-                if child.winfo_class()=="Entry":
-                    child["state"]=NORMAL
-                    child.delete(0,END)
-                elif child.winfo_class()=="Text":
-                    child["state"]=NORMAL
-                    child.delete("1.0",END)
-            if onoff==False:
-                for child in editFrame.winfo_children():
-                    if (child.winfo_class()=="Entry" or child.winfo_class()=="Text"):
-                            child["state"]=DISABLED
-                            if child.winfo_class()=="Text":
-                                child["background"]="#F0F0F0"
-                                child["foreground"]="#6D6D6D"
+
+
+    if showNome["state"]==DISABLED:
+        onoff=False
+    for child in editFrame.winfo_children():
+        if child.winfo_class()=="Entry":
+            child["state"]=NORMAL
+            child.delete(0,END)
+        elif child.winfo_class()=="Text":
+            child["state"]=NORMAL
+            child.delete("1.0",END)
+    if onoff==False:
+        for child in editFrame.winfo_children():
+            if (child.winfo_class()=="Entry" or child.winfo_class()=="Text"):
+                    child["state"]=DISABLED
+                    if child.winfo_class()=="Text":
+                        child["background"]="#F0F0F0"
+                        child["foreground"]="#6D6D6D"
     params=[]
     for element in paramsRaw:
         params.append(str(element))
@@ -252,6 +257,36 @@ def deleteFun():
     file2=open("database.ini","w")    
     file2.write(megastringonasgravatapazza)
     file2.close()
+
+def editFun():
+    megastringonasgravatapazza=""
+    editString=showNome.get().rstrip()+s+showNumero.get().rstrip()+s+showIndirizzo.get().rstrip()+s+showFattura.get().rstrip()+s+showRicevuta.get().rstrip()+s+showImporto.get().rstrip()+s+showGiorno.get().rstrip()+"-"+showMese.get().rstrip()+"-"+showAnno.get().rstrip()+s+showNote.get("1.0",END).rstrip()+"\n"
+    paramsRaw=list(tree.item(tree.focus()).values())[2]
+    cosacciaschifosa=tree.item(tree.focus())
+    
+
+    params=[]
+    
+    for element in paramsRaw:
+        params.append(str(element))
+    file=open("database.ini","r")
+    for line in file:
+        strings=line.rstrip().split("|") 
+        for i in range(0,len(strings),1):
+            strings[i]=strings[i].rstrip()
+        
+        if not strings==params:
+            megastringonasgravatapazza=megastringonasgravatapazza+line
+        else:
+            megastringonasgravatapazza=megastringonasgravatapazza+editString
+            for row in tree.get_children():
+                if tree.item(row)==cosacciaschifosa:
+                    tree.item(row,values=(editString.rstrip().split("|")))
+    file.close()
+    file2=open("database.ini","w")    
+    file2.write(megastringonasgravatapazza)
+    file2.close()
+    
 
 
 
@@ -315,12 +350,11 @@ def onoffFun(event):
 
 
 def fileRead(param,toCheck):
-   
     iids=0
     file=open("database.ini","r")
     for line in file:
         if (not line=="") and (not line=="\n"):
-            iids=iids+1
+            
             strings=line.rstrip().split("|")
             for i in range(0,1,8):
                 strings[i]=strings[i].rstrip()   
@@ -337,9 +371,9 @@ def fileRead(param,toCheck):
             if toCheck[5]==0:
                 param[5]=strings[0]
 
-            if  param[0]==strings[3] and param[1]==strings[4] and int(param[2])==int(strings[6].split("-")[0]) and int(param[3])==int(strings[6].split("-")[1]) and int(param[4])==int(strings[6].split("-")[2]) and param[5].upper()==strings[0].upper():
-                
-                tree.insert(parent="",index=END,iid=iids,values=(strings[0],strings[1],strings[2],strings[3],strings[4],strings[5],strings[6],strings[7]))
+            if  param[0]==strings[3] and param[1]==strings[4] and int(param[2])==int(strings[6].split("-")[0]) and int(param[3])==int(strings[6].split("-")[1]) and int(param[4])==int(strings[6].split("-")[2]) and strings[0].upper().find(param[5].upper())!=-1:
+                iids=iids+1
+                tree.insert(parent="",index=END,values=(strings[0],strings[1],strings[2],strings[3],strings[4],strings[5],strings[6],strings[7]))
             
             
     file.close()
@@ -428,23 +462,28 @@ else:
     getMese=ttk.Combobox(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/480),values=months)
     getAnno=ttk.Combobox(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/480),values=years)
 
+immagine = Image.open("piu.png")
+immagine = immagine.resize((50,50), Image.ANTIALIAS)
+foto=ImageTk.PhotoImage(immagine)
+
+
 if root.winfo_screenheight()>800:
-    
-    new=Button(root,text="nuovo",command=start)
+    new=Button(root,text="Nuovo",image=foto,command=start,bg="#73ff81")
     get=Button(searchFrame,text="Cerca\nelemento",command=threadFilter,width=int(root.winfo_screenwidth()/120),height=2,bg="#78a9ff")
     order=Button(searchFrame,text="Ordina Database\n per data",command=threadOrder,width=int(root.winfo_screenwidth()/120),height=2,bg="#a6ffd5")
     delete=Button(editFrame,text="Elimina\nelemento",command=deleteFun,width=int(root.winfo_screenwidth()/120),height=2,bg="#ff6b6b")
-    edit=Button(editFrame,text="Modifica\nelemento",command=deleteFun,width=int(root.winfo_screenwidth()/120),height=2,bg="#fff382")
+    edit=Button(editFrame,text="Modifica\nelemento",command=editFun,width=int(root.winfo_screenwidth()/120),height=2,bg="#fff382")
 else:
 
-    new=Button(root,text="nuovo",command=start)
+    new=Button(root,text="Nuovo",image=foto,command=start,bg="#73ff81")
+    get=Button(searchFrame,text="Cerca\nelemento",command=threadFilter,width=int(root.winfo_screenwidth()/120),height=2,bg="#78a9ff")
     get=Button(searchFrame,text="Cerca",command=threadFilter,width=int(root.winfo_screenwidth()/200),height=1,bg="#78a9ff")
     order=Button(searchFrame,text="Ordina",command=threadOrder,width=int(root.winfo_screenwidth()/200),height=1,bg="#a6ffd5")
     delete=Button(editFrame,text="Elimina",command=deleteFun,width=int(root.winfo_screenwidth()/200),height=1,bg="#ff6b6b")
-    edit=Button(editFrame,text="Elimina",command=deleteFun,width=int(root.winfo_screenwidth()/200),height=1,bg="#fff382")
+    edit=Button(editFrame,text="Modifica",command=editFun,width=int(root.winfo_screenwidth()/200),height=1,bg="#fff382")
 
 tree=ttk.Treeview(root,height=int((root.winfo_screenheight()/100)*3))
-tree.bind("<ButtonRelease-1>",showIns)
+tree.bind("<<TreeviewSelect>>",showIns)
 
 
 showNome=Entry(editFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
@@ -554,7 +593,7 @@ Label(searchFrame,text="").grid(row=5,column=5,padx=int(root.winfo_screenwidth()
 order.grid(row=5,column=6,padx=0)
 #--------------------------------------------------------------------------------------
 tree.grid(row=0,column=0,padx=int(root.winfo_screenwidth()/50),pady=15,columnspan=200)
-new.grid(row=10,column=11)
+new.grid(row=1,column=3,padx=int(root.winfo_screenwidth()/30))
 
 
 
