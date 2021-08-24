@@ -230,6 +230,7 @@ def startIns():
 
 
 def filterSearch():
+    flag.config(text="!!!Aspetta!!!")
     for child in searchFrame.winfo_children():
                 if child.winfo_class()=="Button":
                     child["state"]=DISABLED
@@ -258,8 +259,10 @@ def filterSearch():
     for child in searchFrame.winfo_children():
                 if child.winfo_class()=="Button":
                     child["state"]=NORMAL
+    flag.config(text="")
     
 def deleteFun():
+    flag.config(text="!!!Aspetta!!!")
     onoff=None
     megastringonasgravatapazza=""
     paramsRaw=list(tree.item(tree.focus()).values())[2]
@@ -304,8 +307,10 @@ def deleteFun():
     file2=open("database.ini","w")    
     file2.write(megastringonasgravatapazza)
     file2.close()
+    flag.config(text="")
 
 def editFun():
+    flag.config(text="!!!Aspetta!!!")
     megastringonasgravatapazza=""
     if root.winfo_screenheight()>800:
         editString=showNome.get().rstrip()+s+showNumero.get().rstrip()+s+showIndirizzo.get().rstrip()+s+showFattura.get().rstrip()+s+showRicevuta.get().rstrip()+s+showImporto.get().rstrip()+s+showGiorno.get().rstrip()+"-"+showMese.get().rstrip()+"-"+showAnno.get().rstrip()+s+showNote.get("1.0",END).rstrip()+"\n"
@@ -336,6 +341,7 @@ def editFun():
     file2=open("database.ini","w")    
     file2.write(megastringonasgravatapazza)
     file2.close()
+    flag.config(text="")
     
 
 
@@ -421,7 +427,7 @@ def fileRead(param,toCheck):
             if toCheck[5]==0:
                 param[5]=strings[0]
 
-            if  param[0]==strings[3] and param[1]==strings[4] and int(param[2])==int(strings[6].split("-")[0]) and int(param[3])==int(strings[6].split("-")[1]) and int(param[4])==int(strings[6].split("-")[2]) and strings[0].upper().find(param[5].upper())!=-1:
+            if  strings[3].upper().find(param[0].upper())!=-1 and strings[4].upper().find(param[1].upper())!=-1 and int(param[2])==int(strings[6].split("-")[0]) and int(param[3])==int(strings[6].split("-")[1]) and int(param[4])==int(strings[6].split("-")[2]) and strings[0].upper().find(param[5].upper())!=-1:
                 iids=iids+1
                 tree.insert(parent="",index=END,values=(strings[0],strings[1],strings[2],strings[3],strings[4],strings[5],strings[6],strings[7]))
             
@@ -430,6 +436,7 @@ def fileRead(param,toCheck):
 
 
 def orderView():
+    flag.config(text="!!!Aspetta!!!")
     for child in searchFrame.winfo_children():
                 if child.winfo_class()=="Button":
                     child["state"]=DISABLED
@@ -442,9 +449,10 @@ def orderView():
     for child in searchFrame.winfo_children():
                 if child.winfo_class()=="Button":
                     child["state"]=NORMAL
+    flag.config(text="")
 
 def threadFilter():
-    flag.config(text="!!!Aspetta!!!")
+   
     onoff=None
     if showNome["state"]==DISABLED:
         onoff=False
@@ -465,10 +473,10 @@ def threadFilter():
     
     tree.delete(*tree.get_children())
     Thread(target=filterSearch).start()
-    flag.config(text="")
+
 
 def threadOrder():
-    flag.config(text="!!!Aspetta!!!")
+    
     onoff=None
     if showNome["state"]==DISABLED:
         onoff=False
@@ -488,7 +496,7 @@ def threadOrder():
                         child["foreground"]="#6D6D6D"
     tree.delete(*tree.get_children())
     Thread(target=orderView).start()
-    flag.config(text="")
+    
 
 
 def start():
@@ -505,8 +513,7 @@ root=Tk()
 root.state("zoomed")
 root.geometry("{}x{}".format(root.winfo_screenwidth(),root.winfo_screenheight()))
 root.title("DataBase")
-iconcina=PhotoImage(file='database.png')
-root.iconphoto(False,iconcina)
+root.iconbitmap("iconona.ico")
 root.resizable(1,1)
 fontStyle = tkFont.Font(family="Segoe UI", size=9)
 width = (root.winfo_screenwidth()-root.winfo_screenwidth()/25)/24
