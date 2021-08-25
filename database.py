@@ -2,8 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from time import sleep, struct_time
 from threading import Thread
-from datetime import date
-from dataclasses import dataclass
+from datetime import date,datetime
 import tkinter.font as tkFont
 from PIL import Image,ImageTk
 
@@ -37,7 +36,7 @@ meseGet=""
 annoGet=""
 noteGet=""
 
-
+focused=1
 
 """
 -----------------------------------------------------------------------------------------------------------
@@ -46,6 +45,8 @@ noteGet=""
 """
 
 def startIns():
+
+    
 
     def setToday():
         giorno.set(today.day)
@@ -66,14 +67,14 @@ def startIns():
     def showErrore():
         errore.place(x=18, y=280)
         errore.config(fg="red",text="⚠ Compila tutti i campi prima di continuare! ⚠")
-        sleep(4)
+        sleep(1)
         errore.place_forget()
 
 
     def showIns():
         errore.place(x=18, y=280)
         errore.config(fg="green",text="✓ Nuova fattura inserita ✓")
-        sleep(4)
+        sleep(1)
         errore.place_forget()
 
     def insNew():
@@ -83,7 +84,8 @@ def startIns():
                 Note="Nessuna nota\n"
             else:
                 Note=note.get("1.0",END)
-            
+                Note=Note.strip()
+                Note=Note+"\n"
 
 
             file.write(nome.get().rstrip()+s+numero.get().rstrip()+s+indirizzo.get().rstrip()+s+fattura.get().rstrip()+s+ricevuta.get().rstrip()+s+importo.get().rstrip()+s+giorno.get().rstrip()+"-"+mese.get().rstrip()+"-"+anno.get().rstrip()+s+Note)
@@ -99,8 +101,11 @@ def startIns():
             indirizzo.delete(0,END)
             ricevuta.delete(0,END)
             note.delete("1.0",END)
+            elements()
         else:
-            Thread(target=showErrore).start()   
+            Thread(target=showErrore).start()
+
+        
 
     def getEntries(Event):
         global nomeGet
@@ -154,8 +159,11 @@ def startIns():
     toplevel.geometry("620x320+{}+{}".format(int(root.winfo_width()/2-xlen/2),int(root.winfo_height()/2-ylen/2)))
     toplevel.resizable(0,0)
     toplevel.title("Nuova Fattura")
-    photo=PhotoImage(file='download.png')
-    toplevel.iconphoto(False,photo)
+    try:
+        photo=PhotoImage(file='download.png')
+        toplevel.iconphoto(False,photo)
+    except:
+        pass
     toplevel.bind('<FocusOut>',getEntries)
     toplevel.protocol("WM_DELETE_WINDOW", onClosing)
         
@@ -227,6 +235,15 @@ def startIns():
 -----------------------------------------------------------------------------------------------------------
 """
 
+def elements():
+        els["text"]="Calcolando..."
+        file=open("database.ini","r")
+        num=0
+        for line in file: 
+            num=num+1
+        els["text"]=str(num)+" elementi"
+
+
 
 
 def filterSearch():
@@ -262,13 +279,13 @@ def filterSearch():
     flag.config(text="")
     
 def deleteFun():
+    
     flag.config(text="!!!Aspetta!!!")
     onoff=None
     megastringonasgravatapazza=""
     paramsRaw=list(tree.item(tree.focus()).values())[2]
-    print(paramsRaw)
     cosacciaschifosa=tree.item(tree.focus())
-    print(cosacciaschifosa)
+
 
     for row in tree.get_children():
         if tree.item(row)==cosacciaschifosa:
@@ -308,14 +325,25 @@ def deleteFun():
     file2.write(megastringonasgravatapazza)
     file2.close()
     flag.config(text="")
+    elements()
 
 def editFun():
     flag.config(text="!!!Aspetta!!!")
     megastringonasgravatapazza=""
     if root.winfo_screenheight()>800:
-        editString=showNome.get().rstrip()+s+showNumero.get().rstrip()+s+showIndirizzo.get().rstrip()+s+showFattura.get().rstrip()+s+showRicevuta.get().rstrip()+s+showImporto.get().rstrip()+s+showGiorno.get().rstrip()+"-"+showMese.get().rstrip()+"-"+showAnno.get().rstrip()+s+showNote.get("1.0",END).rstrip()+"\n"
+        if showNote.get("1.0",END).strip()=="":
+                Note="Nessuna nota\n"
+        else:
+                Note=showNote.get("1.0",END)
+                Note=Note.strip()
+                Note=Note+"\n"
+        editString=showNome.get().rstrip()+s+showNumero.get().rstrip()+s+showIndirizzo.get().rstrip()+s+showFattura.get().rstrip()+s+showRicevuta.get().rstrip()+s+showImporto.get().rstrip()+s+showGiorno.get().rstrip()+"-"+showMese.get().rstrip()+"-"+showAnno.get().rstrip()+s+Note
     else:
-        editString=showNome.get().rstrip()+s+showNumero.get().rstrip()+s+showIndirizzo.get().rstrip()+s+showFattura.get().rstrip()+s+showRicevuta.get().rstrip()+s+showImporto.get().rstrip()+s+showGiorno.get().rstrip()+"-"+showMese.get().rstrip()+"-"+showAnno.get().rstrip()+s+showNote.get().rstrip()+"\n"
+        if showNote.get()=="":
+                Note="Nessuna nota\n"
+        else:
+                Note=showNote.get()
+        editString=showNome.get().rstrip()+s+showNumero.get().rstrip()+s+showIndirizzo.get().rstrip()+s+showFattura.get().rstrip()+s+showRicevuta.get().rstrip()+s+showImporto.get().rstrip()+s+showGiorno.get().rstrip()+"-"+showMese.get().rstrip()+"-"+showAnno.get().rstrip()+s+Note.rstrip()+"\n"
     paramsRaw=list(tree.item(tree.focus()).values())[2]
     cosacciaschifosa=tree.item(tree.focus())
     
@@ -334,10 +362,11 @@ def editFun():
             megastringonasgravatapazza=megastringonasgravatapazza+line
         else:
             megastringonasgravatapazza=megastringonasgravatapazza+editString
-            for row in tree.get_children():
+           
+    file.close()
+    for row in tree.get_children():
                 if tree.item(row)==cosacciaschifosa:
                     tree.item(row,values=(editString.rstrip().split("|")))
-    file.close()
     file2=open("database.ini","w")    
     file2.write(megastringonasgravatapazza)
     file2.close()
@@ -374,7 +403,10 @@ def showIns(event):
         showGiorno.insert(END,params[6].split("-")[0])
         showMese.insert(END,params[6].split("-")[1])  
         showAnno.insert(END,params[6].split("-")[2])  
-        showNote.insert(END,params[7])
+        if params[7].strip()=="Nessuna nota":
+            showNote.insert(END,"")
+        else:
+            showNote.insert(END,params[7])
 
     if onoff==False:
         for child in editFrame.winfo_children():
@@ -426,8 +458,7 @@ def fileRead(param,toCheck):
                 param[4]=strings[6].split("-")[2]  
             if toCheck[5]==0:
                 param[5]=strings[0]
-
-            if  strings[3].upper().find(param[0].upper())!=-1 and strings[4].upper().find(param[1].upper())!=-1 and int(param[2])==int(strings[6].split("-")[0]) and int(param[3])==int(strings[6].split("-")[1]) and int(param[4])==int(strings[6].split("-")[2]) and strings[0].upper().find(param[5].upper())!=-1:
+            if  strings[3].upper().find(param[0].upper())!=-1 and strings[4].upper().find(param[1].upper())!=-1 and str(param[2])==str(strings[6].split("-")[0]) and str(param[3])==str(strings[6].split("-")[1]) and str(param[4])==str(strings[6].split("-")[2]) and strings[0].upper().find(param[5].upper())!=-1:
                 iids=iids+1
                 tree.insert(parent="",index=END,values=(strings[0],strings[1],strings[2],strings[3],strings[4],strings[5],strings[6],strings[7]))
             
@@ -441,11 +472,40 @@ def orderView():
                 if child.winfo_class()=="Button":
                     child["state"]=DISABLED
 
-    for i in range(2000,today.year+1):
-        for j in range(1,13):
-            for y in range(1,32):
-                fileRead(["","","{}".format(y),"{}".format(j),"{}".format(i),""],[0,0,1,1,1,0])
+    toSort=[]
+    file=open("database.ini","r")
+    for line in file:
+        if (not line=="") and (not line=="\n"):
+            toSort.append(line.rstrip().split("|"))
+    
+    toSortDate=[]
+    for i in range(0,toSort.__len__(),1):
+        swapper=toSort[i][6].split("-")
+        swaptemp=swapper[0]
+        swapper[0]=swapper[2]
+        swapper[2]=swaptemp
+        if swapper[1].__len__()==1:
+            swapper[1]="0"+swapper[1]
+        if swapper[2].__len__()==1:
+            swapper[2]="0"+swapper[2]
+        toSortDate.append(str(swapper[0])+str(swapper[1])+str(swapper[2]))
 
+
+
+
+    for i in range(0,toSort.__len__(),1):
+        for j in range(0,toSort.__len__()-1,1):
+            if(int(toSortDate[j])>int(toSortDate[j+1])):
+                temp=toSort[j]
+                toSort[j]=toSort[j+1]
+                toSort[j+1]=temp
+
+                tempDate=toSortDate[j]
+                toSortDate[j]=toSortDate[j+1]
+                toSortDate[j+1]=tempDate
+    for i in range(0,toSort.__len__(),1):
+        tree.insert(parent="",index=END,values=(toSort[i]))
+    file.close()
     for child in searchFrame.winfo_children():
                 if child.winfo_class()=="Button":
                     child["state"]=NORMAL
@@ -472,7 +532,7 @@ def threadFilter():
                         child["foreground"]="#6D6D6D"
     
     tree.delete(*tree.get_children())
-    Thread(target=filterSearch).start()
+    filterSearch()
 
 
 def threadOrder():
@@ -495,9 +555,11 @@ def threadOrder():
                         child["background"]="#F0F0F0"
                         child["foreground"]="#6D6D6D"
     tree.delete(*tree.get_children())
-    Thread(target=orderView).start()
+    orderView()
     
-
+def threadEdit():
+    editFun()
+    flag.config(text="")
 
 def start():
     try:
@@ -508,18 +570,26 @@ def start():
         pass
     startIns()
 
+def threadWait():
+    flag.config(text="!!!Aspetta!!!")
 
 root=Tk()
 root.state("zoomed")
 root.geometry("{}x{}".format(root.winfo_screenwidth(),root.winfo_screenheight()))
 root.title("DataBase")
-root.iconbitmap("iconona.ico")
+try:
+    root.iconbitmap("iconona.ico")
+except:
+    pass
+
 root.resizable(1,1)
 fontStyle = tkFont.Font(family="Segoe UI", size=9)
 width = (root.winfo_screenwidth()-root.winfo_screenwidth()/25)/24
 height = root.winfo_screenheight()
 searchFrame=LabelFrame(root,text="Ricerca",font=("Segoe UI",16))
 editFrame=LabelFrame(root,text="Modifica",font=("Segoe UI",16))
+
+
 
 getNome=Entry(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
 getFattura=Entry(searchFrame,font=fontStyle,width=int(root.winfo_screenwidth()/75))
@@ -541,14 +611,14 @@ if root.winfo_screenheight()>800:
     get=Button(searchFrame,text="Cerca\nelemento",command=threadFilter,width=int(root.winfo_screenwidth()/120),height=2,bg="#78a9ff")
     order=Button(searchFrame,text="Ordina Database\n per data",command=threadOrder,width=int(root.winfo_screenwidth()/120),height=2,bg="#bdfbff")
     delete=Button(editFrame,text="Elimina\nelemento",command=deleteFun,width=int(root.winfo_screenwidth()/120),height=2,bg="#ff6b6b")
-    edit=Button(editFrame,text="Modifica\nelemento",command=editFun,width=int(root.winfo_screenwidth()/120),height=2,bg="#fff382")
+    edit=Button(editFrame,text="Modifica\nelemento",command=threadEdit,width=int(root.winfo_screenwidth()/120),height=2,bg="#fff382")
 else:
 
     new=Button(root,text="Aggiungi",command=start,width=int(root.winfo_screenwidth()/120),height=2,bg="#85ff9d")
     get=Button(searchFrame,text="Cerca",command=threadFilter,width=int(root.winfo_screenwidth()/200),height=1,bg="#78a9ff")
     order=Button(searchFrame,text="Ordina",command=threadOrder,width=int(root.winfo_screenwidth()/200),height=1,bg="#bdfbff")
     delete=Button(editFrame,text="Elimina",command=deleteFun,width=int(root.winfo_screenwidth()/200),height=1,bg="#ff6b6b")
-    edit=Button(editFrame,text="Modifica",command=editFun,width=int(root.winfo_screenwidth()/200),height=1,bg="#fff382")
+    edit=Button(editFrame,text="Modifica",command=threadEdit,width=int(root.winfo_screenwidth()/200),height=1,bg="#fff382")
 
 
 treeFrame=Frame(root)
@@ -580,6 +650,7 @@ if root.winfo_screenheight()>800:
 else:
     showNote=Entry(editFrame,width=int(root.winfo_screenwidth()/75),font=fontStyle)
 
+els=Label(root)
 
 
 img = Image.open("lucchettino.png")
@@ -625,11 +696,11 @@ tree.heading("Note",text="Note")
 
 
 if root.winfo_screenheight()>800:
-    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/50),padx=int(root.winfo_screenwidth()/50),rowspan=2)
-    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/120),ipady=int(root.winfo_screenheight()/80),rowspan=2)
+    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/50),padx=int(root.winfo_screenwidth()/50),rowspan=3)
+    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/120),ipady=int(root.winfo_screenheight()/80),rowspan=3)
 else:
-    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/100),padx=int(root.winfo_screenwidth()/50),rowspan=2)
-    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/120),ipady=int(root.winfo_screenheight()/100),rowspan=2)
+    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/100),padx=int(root.winfo_screenwidth()/50),rowspan=3)
+    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/120),ipady=int(root.winfo_screenheight()/100),rowspan=3)
 #------------------------------------------------------------------------------------
 
 if root.winfo_screenheight()>800:
@@ -669,7 +740,8 @@ tree.pack(side=LEFT)
 treeScroll.pack(side=RIGHT,fill=Y)
 
 flag.grid(row=1,column=3,padx=int(root.winfo_screenwidth()/3/2/8))
-new.grid(row=2,column=3,padx=int(root.winfo_screenwidth()/3/2/8))
+els.grid(row=2,column=3,padx=int(root.winfo_screenwidth()/3/2/8))
+new.grid(row=3,column=3,padx=int(root.winfo_screenwidth()/3/2/8))
 
 
 
@@ -730,7 +802,7 @@ active.grid(row=3,column=50,rowspan=3,padx=int(root.winfo_screenwidth()/100))
 
 
 
-
+elements()
 
 
 root.mainloop()
