@@ -5,6 +5,7 @@ from threading import Thread
 from datetime import date,datetime
 import tkinter.font as tkFont
 from PIL import Image,ImageTk
+import xlsxwriter
 
 iids=0
 
@@ -16,10 +17,15 @@ s="|"
 today=date.today()
 
 for i in range(31):
-    days.append("{}".format(i+1))
-
+    if str(i+1).__len__()==1:
+        days.append("0{}".format(i+1))
+    else:
+        days.append("{}".format(i+1))
 for i in range(12):
-    months.append("{}".format(i+1))
+    if str(i+1).__len__()==1:
+        months.append("0{}".format(i+1))
+    else:
+        months.append("{}".format(i+1))
 
 for i in range(100):
     years.append("{}".format(i+2000))
@@ -49,9 +55,18 @@ def startIns():
     
 
     def setToday():
-        giorno.set(today.day)
-        mese.set(today.month)
-        anno.set(today.year)
+        if str(today.day).__len__()==1:
+            giorno.set("0{}".format(today.day))
+        else:
+            giorno.set("{}".format(today.day))
+        if str(today.month).__len__()==1:
+            mese.set("0{}".format(today.month))
+        else:
+            mese.set("{}".format(today.month))
+        if str(today.year).__len__()==1:
+            anno.set("0{}".format(today.year))
+        else:
+            anno.set("{}".format(today.year))
     def clear():
             nome.delete(0,END)
             fattura.delete(0,END)
@@ -78,17 +93,22 @@ def startIns():
         errore.place_forget()
 
     def insNew():
-        if not nome.get()=="" and not fattura.get()=="" and not importo.get()=="" and not mese.get()=="" and not anno.get()=="" and not ricevuta.get()=="" and not indirizzo.get()=="" and not numero.get()=="":
+        if not nome.get()=="" and not importo.get()=="" and not giorno.get()=="" and not mese.get()=="" and not anno.get()=="" and not ricevuta.get()=="" and not indirizzo.get()=="" and not numero.get()=="":
             file=open("database.ini","a")
-            if note.get("1.0",END)=="\n":
+            if note.get("1.0",END).strip()=="":
                 Note="Nessuna nota\n"
             else:
                 Note=note.get("1.0",END)
                 Note=Note.strip()
                 Note=Note+"\n"
 
+            if fattura.get().strip()=="":
+                Fattura="/"
+            else:
+                Fattura=fattura.get()
+                Fattura=Fattura.strip()
 
-            file.write(nome.get().rstrip()+s+numero.get().rstrip()+s+indirizzo.get().rstrip()+s+fattura.get().rstrip()+s+ricevuta.get().rstrip()+s+importo.get().rstrip()+s+giorno.get().rstrip()+"-"+mese.get().rstrip()+"-"+anno.get().rstrip()+s+Note)
+            file.write(nome.get().rstrip()+s+numero.get().rstrip()+s+indirizzo.get().rstrip()+s+Fattura.rstrip()+s+ricevuta.get().rstrip()+s+importo.get().rstrip()+s+giorno.get().rstrip()+"-"+mese.get().rstrip()+"-"+anno.get().rstrip()+s+Note)
             file.close()
             Thread(target=showIns).start()
             nome.delete(0,END)
@@ -101,7 +121,37 @@ def startIns():
             indirizzo.delete(0,END)
             ricevuta.delete(0,END)
             note.delete("1.0",END)
-            elements()
+            elements()  
+        elif not nome.get()=="" and not fattura.get()=="" and not importo.get()=="" and not mese.get()=="" and not anno.get()=="" and not indirizzo.get()=="" and not numero.get()=="":
+            file=open("database.ini","a")
+            if note.get("1.0",END).strip()=="":
+                Note="Nessuna nota\n"
+            else:
+                Note=note.get("1.0",END)
+                Note=Note.strip()
+                Note=Note+"\n"
+
+
+            if ricevuta.get().strip()=="":
+                Ricevuta="/"
+            else:
+                Ricevuta=ricevuta.get()
+                Ricevuta=Ricevuta.strip()
+
+            file.write(nome.get().rstrip()+s+numero.get().rstrip()+s+indirizzo.get().rstrip()+s+fattura.get().rstrip()+s+Ricevuta.rstrip()+s+importo.get().rstrip()+s+giorno.get().rstrip()+"-"+mese.get().rstrip()+"-"+anno.get().rstrip()+s+Note)
+            file.close()
+            Thread(target=showIns).start()
+            nome.delete(0,END)
+            fattura.delete(0,END)
+            importo.delete(0,END)
+            giorno.set("")
+            mese.set("")
+            anno.set("")    
+            numero.delete(0,END)    
+            indirizzo.delete(0,END)
+            ricevuta.delete(0,END)
+            note.delete("1.0",END)
+            elements()         
         else:
             Thread(target=showErrore).start()
 
@@ -235,6 +285,9 @@ def startIns():
 -----------------------------------------------------------------------------------------------------------
 """
 
+
+
+
 def elements():
         els["text"]="Calcolando..."
         file=open("database.ini","r")
@@ -253,23 +306,23 @@ def filterSearch():
                     child["state"]=DISABLED
     param=["","","","","",""]
     toCheck=[0,0,0,0,0,0]
-    if getFattura.get()!="":
-        param[0]=getFattura.get()
+    if getFattura.get().strip()!="":
+        param[0]=getFattura.get().strip()
         toCheck[0]=1
-    if getRicevuta.get()!="":
-        param[1]=getRicevuta.get()
+    if getRicevuta.get().strip()!="":
+        param[1]=getRicevuta.get().strip()
         toCheck[1]=1
-    if getGiorno.get()!="":
-        param[2]=getGiorno.get()
+    if getGiorno.get().strip()!="":
+        param[2]=getGiorno.get().strip()
         toCheck[2]=1
-    if getMese.get()!="":
-        param[3]=getMese.get()
+    if getMese.get().strip()!="":
+        param[3]=getMese.get().strip()
         toCheck[3]=1
-    if getAnno.get()!="":
-        param[4]=getAnno.get()
+    if getAnno.get().strip()!="":
+        param[4]=getAnno.get().strip()
         toCheck[4]=1
-    if getNome.get()!="":
-        param[5]=getNome.get()
+    if getNome.get().strip()!="":
+        param[5]=getNome.get().strip()
         toCheck[5]=1
 
     fileRead(param,toCheck)
@@ -337,9 +390,23 @@ def editFun():
                 Note=showNote.get("1.0",END)
                 Note=Note.strip()
                 Note=Note+"\n"
-        editString=showNome.get().rstrip()+s+showNumero.get().rstrip()+s+showIndirizzo.get().rstrip()+s+showFattura.get().rstrip()+s+showRicevuta.get().rstrip()+s+showImporto.get().rstrip()+s+showGiorno.get().rstrip()+"-"+showMese.get().rstrip()+"-"+showAnno.get().rstrip()+s+Note
+
+        if showRicevuta.get().strip()=="":
+            Ricevuta="/"
+        else:
+            Ricevuta=showRicevuta.get()
+            Ricevuta=Ricevuta.strip()
+
+
+        if showFattura.get().strip()=="":
+            Fattura="/"
+        else:
+            Fattura=showFattura.get()
+            Fattura=Fattura.strip()
+        
+        editString=showNome.get().rstrip()+s+showNumero.get().rstrip()+s+showIndirizzo.get().rstrip()+s+Fattura+s+Ricevuta+s+showImporto.get().rstrip()+s+showGiorno.get().rstrip()+"-"+showMese.get().rstrip()+"-"+showAnno.get().rstrip()+s+Note
     else:
-        if showNote.get()=="":
+        if showNote.get().strip()=="":
                 Note="Nessuna nota\n"
         else:
                 Note=showNote.get()
@@ -397,8 +464,17 @@ def showIns(event):
         showNome.insert(END,params[0])
         showNumero.insert(END,params[1])
         showIndirizzo.insert(END,params[2])
-        showFattura.insert(END,params[3])
-        showRicevuta.insert(END,params[4])
+        if params[3].strip()=="/":
+            showFattura.insert(END,"")
+        else:
+            showFattura.insert(END,params[3])
+
+        if params[4].strip()=="/":
+            showRicevuta.insert(END,"")
+        else:
+            showRicevuta.insert(END,params[4])
+
+        
         showImporto.insert(END,params[5])
         showGiorno.insert(END,params[6].split("-")[0])
         showMese.insert(END,params[6].split("-")[1])  
@@ -445,7 +521,7 @@ def fileRead(param,toCheck):
             
             strings=line.rstrip().split("|")
             for i in range(0,1,8):
-                strings[i]=strings[i].rstrip()   
+                strings[i]=strings[i].strip()   
             if toCheck[0]==0:
                 param[0]=strings[3]
             if toCheck[1]==0:
@@ -493,7 +569,7 @@ def orderView():
 
 
 
-    for i in range(0,toSort.__len__(),1):
+    for i in range(0,toSort.__len__()-1,1):
         for j in range(0,toSort.__len__()-1,1):
             if(int(toSortDate[j])>int(toSortDate[j+1])):
                 temp=toSort[j]
