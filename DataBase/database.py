@@ -6,6 +6,7 @@ from datetime import date,datetime
 import tkinter.font as tkFont
 from PIL import Image,ImageTk
 import xlsxwriter
+from xlsxwriter.utility import xl_range
 
 iids=0
 
@@ -285,8 +286,65 @@ def startIns():
 -----------------------------------------------------------------------------------------------------------
 """
 
+def treeToXlsx():
+    workbook = xlsxwriter.Workbook('../../Stampa.xlsx')
+    worksheet = workbook.add_worksheet()
+
+    formatgrey=workbook.add_format()
+    formatgrey.set_bg_color("#EEEEEE")
+    formatgrey.set_left(1)
+    formatgrey.set_right(1)
+    formatgrey.set_bottom(4)
+    formatgrey.set_top(4)
+    formatgrey.set_text_wrap()
 
 
+
+    formatwhite=workbook.add_format()
+    formatwhite.set_bg_color("white")
+    formatwhite.set_left(1)
+    formatwhite.set_right(1)
+    formatwhite.set_bottom(4)
+    formatwhite.set_top(4)
+    formatwhite.set_text_wrap()
+
+    borderbot=workbook.add_format({"border":1,"bottom":2,})
+    borderbot.set_bold()
+
+    worksheet.set_column(0,0,30)
+    worksheet.set_column(1,2,17.5)
+    worksheet.set_column(3,4,10.5)
+    worksheet.set_column(5,6,40)
+
+
+    children=[]
+    for child in tree.get_children():
+        children.append([list(tree.item(child).values())[2][0],list(tree.item(child).values())[2][3],list(tree.item(child).values())[2][4],list(tree.item(child).values())[2][5],list(tree.item(child).values())[2][6],list(tree.item(child).values())[2][7]])
+
+
+    index=-1
+    for i in range(0,children.__len__(),1):
+        index+=1
+        for j in range(0,children[i].__len__(),1):
+            if i%2==0:
+                worksheet.write(i+1,j, children[i][j] ,formatgrey)
+            else:
+                worksheet.write(i+1,j, children[i][j] ,formatwhite)
+
+    data=[
+        "Nome Cognome",
+        "Fattura",
+        "Ricevuta",
+        "Importo (€)",
+        "Data",
+        "Note"
+    ]
+    for i in range(0,children[i].__len__(),1):
+        worksheet.write(0,i, data[i] ,borderbot)
+
+    
+    workbook.close()
+    
 
 def elements():
         els["text"]="Calcolando..."
@@ -587,6 +645,47 @@ def orderView():
                     child["state"]=NORMAL
     flag.config(text="")
 
+
+def orderFile():
+    megastringozza=""
+
+    toSort=[]
+    file=open("database.ini","r")
+    for line in file:
+        if (not line=="") and (not line=="\n"):
+            toSort.append(line.rstrip().split("|"))
+    
+    toSortDate=[]
+    for i in range(0,toSort.__len__(),1):
+        swapper=toSort[i][6].split("-")
+        swaptemp=swapper[0]
+        swapper[0]=swapper[2]
+        swapper[2]=swaptemp
+        if swapper[1].__len__()==1:
+            swapper[1]="0"+swapper[1]
+        if swapper[2].__len__()==1:
+            swapper[2]="0"+swapper[2]
+        toSortDate.append(str(swapper[0])+str(swapper[1])+str(swapper[2]))
+
+
+
+
+    for i in range(0,toSort.__len__()-1,1):
+        for j in range(0,toSort.__len__()-1,1):
+            if(int(toSortDate[j])>int(toSortDate[j+1])):
+                temp=toSort[j]
+                toSort[j]=toSort[j+1]
+                toSort[j+1]=temp
+
+                tempDate=toSortDate[j]
+                toSortDate[j]=toSortDate[j+1]
+                toSortDate[j+1]=tempDate
+    for i in range(0,toSort.__len__(),1):
+        tree.insert(parent="",index=END,values=(toSort[i]))
+    file.close()
+
+
+
 def threadFilter():
    
     onoff=None
@@ -609,6 +708,7 @@ def threadFilter():
     
     tree.delete(*tree.get_children())
     filterSearch()
+    
 
 
 def threadOrder():
@@ -683,6 +783,7 @@ else:
 
 
 if root.winfo_screenheight()>800:
+    printxls=Button(root,text="Stampa\ndatabase",command=treeToXlsx,width=int(root.winfo_screenwidth()/120),height=2,bg="#bdfbff")
     new=Button(root,text="Aggiungi\nelemento",command=start,width=int(root.winfo_screenwidth()/120),height=2,bg="#85ff9d")
     get=Button(searchFrame,text="Cerca\nelemento",command=threadFilter,width=int(root.winfo_screenwidth()/120),height=2,bg="#78a9ff")
     order=Button(searchFrame,text="Ordina Database\n per data",command=threadOrder,width=int(root.winfo_screenwidth()/120),height=2,bg="#bdfbff")
@@ -772,11 +873,11 @@ tree.heading("Note",text="Note")
 
 
 if root.winfo_screenheight()>800:
-    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/50),padx=int(root.winfo_screenwidth()/50),rowspan=3)
-    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/120),ipady=int(root.winfo_screenheight()/80),rowspan=3)
+    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/50),padx=int(root.winfo_screenwidth()/50),rowspan=4)
+    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/120),ipady=int(root.winfo_screenheight()/80),rowspan=4)
 else:
-    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/100),padx=int(root.winfo_screenwidth()/50),rowspan=3)
-    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/120),ipady=int(root.winfo_screenheight()/100),rowspan=3)
+    searchFrame.grid(row=1,column=0,ipadx=int(root.winfo_screenwidth()/80),ipady=int(root.winfo_screenheight()/100),padx=int(root.winfo_screenwidth()/50),rowspan=4)
+    editFrame.grid(row=1,column=1,ipadx=int(root.winfo_screenwidth()/120),ipady=int(root.winfo_screenheight()/100),rowspan=4)
 #------------------------------------------------------------------------------------
 
 if root.winfo_screenheight()>800:
@@ -818,6 +919,7 @@ treeScroll.pack(side=RIGHT,fill=Y)
 flag.grid(row=1,column=3,padx=int(root.winfo_screenwidth()/3/2/8))
 els.grid(row=2,column=3,padx=int(root.winfo_screenwidth()/3/2/8))
 new.grid(row=3,column=3,padx=int(root.winfo_screenwidth()/3/2/8))
+printxls.grid(row=4,column=3,padx=int(root.winfo_screenwidth()/3/2/8))
 
 
 
