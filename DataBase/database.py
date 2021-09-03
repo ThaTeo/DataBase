@@ -7,6 +7,7 @@ import tkinter.font as tkFont
 from PIL import Image,ImageTk
 import xlsxwriter
 from xlsxwriter.utility import xl_range
+import os
 
 iids=0
 
@@ -43,7 +44,9 @@ meseGet=""
 annoGet=""
 noteGet=""
 
-focused=1
+
+
+
 
 """
 -----------------------------------------------------------------------------------------------------------
@@ -211,7 +214,7 @@ def startIns():
     toplevel.resizable(0,0)
     toplevel.title("Nuova Fattura")
     try:
-        photo=PhotoImage(file='download.png')
+        photo=PhotoImage(file='res\piu.png')
         toplevel.iconphoto(False,photo)
     except:
         pass
@@ -287,63 +290,66 @@ def startIns():
 """
 
 def treeToXlsx():
-    workbook = xlsxwriter.Workbook('../../Stampa.xlsx')
-    worksheet = workbook.add_worksheet()
-
-    formatgrey=workbook.add_format()
-    formatgrey.set_bg_color("#EEEEEE")
-    formatgrey.set_left(1)
-    formatgrey.set_right(1)
-    formatgrey.set_bottom(4)
-    formatgrey.set_top(4)
-    formatgrey.set_text_wrap()
-
-
-
-    formatwhite=workbook.add_format()
-    formatwhite.set_bg_color("white")
-    formatwhite.set_left(1)
-    formatwhite.set_right(1)
-    formatwhite.set_bottom(4)
-    formatwhite.set_top(4)
-    formatwhite.set_text_wrap()
-
-    borderbot=workbook.add_format({"border":1,"bottom":2,})
-    borderbot.set_bold()
-
-    worksheet.set_column(0,0,30)
-    worksheet.set_column(1,2,17.5)
-    worksheet.set_column(3,4,10.5)
-    worksheet.set_column(5,6,40)
-
-
     children=[]
     for child in tree.get_children():
         children.append([list(tree.item(child).values())[2][0],list(tree.item(child).values())[2][3],list(tree.item(child).values())[2][4],list(tree.item(child).values())[2][5],list(tree.item(child).values())[2][6],list(tree.item(child).values())[2][7]])
-
-
-    index=-1
-    for i in range(0,children.__len__(),1):
-        index+=1
-        for j in range(0,children[i].__len__(),1):
-            if i%2==0:
-                worksheet.write(i+1,j, children[i][j] ,formatgrey)
-            else:
-                worksheet.write(i+1,j, children[i][j] ,formatwhite)
-
-    data=[
-        "Nome Cognome",
-        "Fattura",
-        "Ricevuta",
-        "Importo (€)",
-        "Data",
-        "Note"
-    ]
-    for i in range(0,children[i].__len__(),1):
-        worksheet.write(0,i, data[i] ,borderbot)
-
     
-    workbook.close()
+    if children!=[]:
+        desktop=os.path.join(os.environ["USERPROFILE"],"Desktop")
+        workbook = xlsxwriter.Workbook('../../Stampa.xlsx')
+        worksheet = workbook.add_worksheet()
+
+        formatgrey=workbook.add_format()
+        formatgrey.set_bg_color("#EEEEEE")
+        formatgrey.set_left(1)
+        formatgrey.set_right(1)
+        formatgrey.set_bottom(4)
+        formatgrey.set_top(4)
+        formatgrey.set_text_wrap()
+
+
+
+        formatwhite=workbook.add_format()
+        formatwhite.set_bg_color("white")
+        formatwhite.set_left(1)
+        formatwhite.set_right(1)
+        formatwhite.set_bottom(4)
+        formatwhite.set_top(4)
+        formatwhite.set_text_wrap()
+
+        borderbot=workbook.add_format({"border":1,"bottom":2,})
+        borderbot.set_bold()
+
+        worksheet.set_column(0,0,30)
+        worksheet.set_column(1,2,17.5)
+        worksheet.set_column(3,4,10.5)
+        worksheet.set_column(5,6,40)
+
+
+        
+
+        index=-1
+        for i in range(0,children.__len__(),1):
+            index+=1
+            for j in range(0,children[i].__len__(),1):
+                if i%2==0:
+                    worksheet.write(i+1,j, children[i][j] ,formatgrey)
+                else:
+                    worksheet.write(i+1,j, children[i][j] ,formatwhite)
+
+        data=[
+            "Nome Cognome",
+            "Fattura",
+            "Ricevuta",
+            "Importo (€)",
+            "Data",
+            "Note"
+        ]
+        for i in range(0,children[i].__len__(),1):
+            worksheet.write(0,i, data[i] ,borderbot)
+
+        
+        workbook.close()
     
 
 def elements():
@@ -394,7 +400,8 @@ def deleteFun():
     flag.config(text="!!!Aspetta!!!")
     onoff=None
     megastringonasgravatapazza=""
-    paramsRaw=list(tree.item(tree.focus()).values())[2]
+    paramsRaw=(tree.item(tree.focus())["text"])
+
     cosacciaschifosa=tree.item(tree.focus())
 
 
@@ -420,15 +427,15 @@ def deleteFun():
                         child["background"]="#F0F0F0"
                         child["foreground"]="#6D6D6D"
     params=[]
-    for element in paramsRaw:
-        params.append(str(element))
+    params=paramsRaw.rstrip().split("|")
+
     file=open("database.ini","r")
     for line in file:
         strings=line.rstrip().split("|") 
         
         for i in range(0,len(strings),1):
-            strings[i]=strings[i].rstrip()
-        
+            strings[i]=str(strings[i].rstrip())
+
         if not strings==params:
             megastringonasgravatapazza=megastringonasgravatapazza+line
     file.close()
@@ -469,29 +476,35 @@ def editFun():
         else:
                 Note=showNote.get()
         editString=showNome.get().rstrip()+s+showNumero.get().rstrip()+s+showIndirizzo.get().rstrip()+s+showFattura.get().rstrip()+s+showRicevuta.get().rstrip()+s+showImporto.get().rstrip()+s+showGiorno.get().rstrip()+"-"+showMese.get().rstrip()+"-"+showAnno.get().rstrip()+s+Note.rstrip()+"\n"
-    paramsRaw=list(tree.item(tree.focus()).values())[2]
+
+
+    paramsRaw=(tree.item(tree.focus())["text"])
+
     cosacciaschifosa=tree.item(tree.focus())
+    
     
 
     params=[]
     
-    for element in paramsRaw:
-        params.append(str(element))
+    params=paramsRaw.rstrip().split("|")
+
     file=open("database.ini","r")
     for line in file:
-        strings=line.rstrip().split("|") 
+        strings=line.rstrip().split("|")
         for i in range(0,len(strings),1):
-            strings[i]=strings[i].rstrip()
+            strings[i]=str(strings[i].rstrip())
         
         if not strings==params:
+            
             megastringonasgravatapazza=megastringonasgravatapazza+line
         else:
+
             megastringonasgravatapazza=megastringonasgravatapazza+editString
            
     file.close()
     for row in tree.get_children():
                 if tree.item(row)==cosacciaschifosa:
-                    tree.item(row,values=(editString.rstrip().split("|")))
+                    tree.item(row,text=editString.rstrip(),values=(editString.rstrip().split("|")))
     file2=open("database.ini","w")    
     file2.write(megastringonasgravatapazza)
     file2.close()
@@ -513,12 +526,12 @@ def showIns(event):
             child["state"]=NORMAL
             child.delete("1.0",END)
 
-    paramsRaw=list(tree.item(tree.focus()).values())[2]
+    paramsRaw=(tree.item(tree.focus())["text"])
     params=[]
-    for element in paramsRaw:
-        params.append(str(element))
+    params=paramsRaw.rstrip().split("|")
 
     if params!=[]:
+
         showNome.insert(END,params[0])
         showNumero.insert(END,params[1])
         showIndirizzo.insert(END,params[2])
@@ -572,6 +585,7 @@ def onoffFun(event):
 
 
 def fileRead(param,toCheck):
+
     iids=0
     file=open("database.ini","r")
     for line in file:
@@ -594,7 +608,8 @@ def fileRead(param,toCheck):
                 param[5]=strings[0]
             if  strings[3].upper().find(param[0].upper())!=-1 and strings[4].upper().find(param[1].upper())!=-1 and str(param[2])==str(strings[6].split("-")[0]) and str(param[3])==str(strings[6].split("-")[1]) and str(param[4])==str(strings[6].split("-")[2]) and strings[0].upper().find(param[5].upper())!=-1:
                 iids=iids+1
-                tree.insert(parent="",index=END,values=(strings[0],strings[1],strings[2],strings[3],strings[4],strings[5],strings[6],strings[7]))
+                tree.insert(parent="",index=END,text=(strings[0]+s+strings[1]+s+strings[2]+s+strings[3]+s+strings[4]+s+strings[5]+s+strings[6]+s+strings[7]),values=(strings[0],strings[1],strings[2],strings[3],strings[4],strings[5],strings[6],strings[7]))
+
             
             
     file.close()
@@ -628,7 +643,7 @@ def orderView():
 
 
     for i in range(0,toSort.__len__()-1,1):
-        for j in range(0,toSort.__len__()-1,1):
+        for j in range(0,toSort.__len__()-1-i,1):
             if(int(toSortDate[j])>int(toSortDate[j+1])):
                 temp=toSort[j]
                 toSort[j]=toSort[j+1]
@@ -638,7 +653,7 @@ def orderView():
                 toSortDate[j]=toSortDate[j+1]
                 toSortDate[j+1]=tempDate
     for i in range(0,toSort.__len__(),1):
-        tree.insert(parent="",index=END,values=(toSort[i]))
+        tree.insert(parent="",index=END,text=(toSort[i][0]+s+toSort[i][1]+s+toSort[i][2]+s+toSort[i][3]+s+toSort[i][4]+s+toSort[i][5]+s+toSort[i][6]+s+toSort[i][7]),values=(toSort[i]))
     file.close()
     for child in searchFrame.winfo_children():
                 if child.winfo_class()=="Button":
@@ -671,7 +686,7 @@ def orderFile():
 
 
     for i in range(0,toSort.__len__()-1,1):
-        for j in range(0,toSort.__len__()-1,1):
+        for j in range(0,toSort.__len__()-1-i,1):
             if(int(toSortDate[j])>int(toSortDate[j+1])):
                 temp=toSort[j]
                 toSort[j]=toSort[j+1]
@@ -681,8 +696,12 @@ def orderFile():
                 toSortDate[j]=toSortDate[j+1]
                 toSortDate[j+1]=tempDate
     for i in range(0,toSort.__len__(),1):
-        tree.insert(parent="",index=END,values=(toSort[i]))
+        megastringozza=megastringozza+(str(toSort[i][0])+s+str(toSort[i][1])+s+str(toSort[i][2])+s+str(toSort[i][3])+s+str(toSort[i][4])+s+str(toSort[i][5])+s+str(toSort[i][6])+s+str(toSort[i][7])+"\n")
     file.close()
+    file=open("database.ini","w")
+    file.write(megastringozza)   
+    file.close()
+
 
 
 
@@ -732,6 +751,7 @@ def threadOrder():
                         child["foreground"]="#6D6D6D"
     tree.delete(*tree.get_children())
     orderView()
+    #orderFile()
     
 def threadEdit():
     editFun()
@@ -754,7 +774,7 @@ root.state("zoomed")
 root.geometry("{}x{}".format(root.winfo_screenwidth(),root.winfo_screenheight()))
 root.title("DataBase")
 try:
-    root.iconbitmap("iconona.ico")
+    root.iconbitmap("res\icona.ico")
 except:
     pass
 
@@ -830,10 +850,10 @@ else:
 els=Label(root)
 
 
-img = Image.open("lucchettino.png")
+img = Image.open("res\lucchetto1.png")
 img = img.resize((30,30), Image.ANTIALIAS)
 
-img2 = Image.open("lucchettino_chiuso.png")
+img2 = Image.open("res\lucchetto2.png")
 img2 = img2.resize((30,30), Image.ANTIALIAS)
 
 
