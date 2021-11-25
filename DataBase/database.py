@@ -104,6 +104,7 @@ def startIns():
             else:
                 Note=note.get("1.0",END)
                 Note=Note.strip()
+                Note=Note.replace("\n"," ")
                 Note=Note+"\n"
 
             if fattura.get().strip()=="":
@@ -133,6 +134,7 @@ def startIns():
             else:
                 Note=note.get("1.0",END)
                 Note=Note.strip()
+                Note=Note.replace("\n"," ")
                 Note=Note+"\n"
 
 
