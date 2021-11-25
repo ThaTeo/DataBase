@@ -105,7 +105,6 @@ def startIns():
                 Note=note.get("1.0",END)
                 Note=Note.strip()
                 Note=Note.replace("\n"," ")
-                sjkvbskdjb
                 Note=Note+"\n"
 
             if fattura.get().strip()=="":
